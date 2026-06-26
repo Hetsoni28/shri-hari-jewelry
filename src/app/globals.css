@@ -1,26 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+
 :root {
-  --background: #ffffff;
+  /* Colors */
+  --color-primary: #8069BF;
+  --color-secondary: #7C7296;
+  --color-tertiary: #C9A74D;
+  --color-neutral: #79767D;
+  --color-background-light: #F7F5FA; /* Light lavender tint for background */
+  
+  --background: var(--color-background-light);
   --foreground: #171717;
 }
 
 @theme inline {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-tertiary: var(--color-tertiary);
+  --color-neutral: var(--color-neutral);
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --font-headline: 'Playfair Display', serif;
+  --font-body: 'Source Serif 4', serif;
+  --font-label: 'Source Sans 3', sans-serif;
+
+  /* Custom Master Breakpoints */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm-xs: 375px;
+  --breakpoint-sm-md: 390px;
+  --breakpoint-sm-lg: 414px;
+  --breakpoint-sm-xl: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-md-lg: 820px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+  --breakpoint-3xl: 1536px;
+  --breakpoint-4xl: 1920px;
+  --breakpoint-5xl: 2560px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Force light theme — this is a luxury brand, always light */
+    --background: #F7F5FA;
+    --foreground: #171717;
+    --color-primary: #8069BF;
+    --color-secondary: #7C7296;
+    --color-tertiary: #C9A74D;
+    --color-neutral: #79767D;
+    --color-background-light: #F7F5FA;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  /* Prevent horizontal overflow on all devices without breaking sticky */
+  overflow-x: clip;
 }
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  /* Prevent horizontal overflow */
+  overflow-x: clip;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%; /* Prevent iOS font scaling */
+}
+
+/* Base Component Styles */
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  min-height: 48px; /* Touch target minimum */
+  border-radius: 0; /* Sharp edges */
+  font-family: var(--font-label);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  padding: 0.75rem 1.5rem;
+  min-height: 48px;
+  border-radius: 0; /* Sharp edges */
+  font-family: var(--font-label);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-inverted {
+  background-color: #2D2A32;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  min-height: 48px;
+  border-radius: 0; /* Sharp edges */
+  font-family: var(--font-label);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+}
+
+.btn-inverted:hover {
+  filter: brightness(1.2);
+}
+
+.btn-outlined {
+  background-color: transparent;
+  color: var(--foreground);
+  padding: 0.75rem 1.5rem;
+  min-height: 48px;
+  border-radius: 0; /* Sharp edges */
+  font-family: var(--font-label);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 1px solid var(--color-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+}
+
+.btn-outlined:hover {
+  border-color: var(--foreground);
+}
+
+/* Typography Utilities */
+.text-headline {
+  font-family: var(--font-headline);
+}
+
+.text-body {
+  font-family: var(--font-body);
+}
+
+.text-label {
+  font-family: var(--font-label);
+}
+
+/* Forms */
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  min-height: 48px;
+  border: 1px solid var(--color-secondary);
+  border-radius: 0; /* Sharp edges */
+  background-color: transparent;
+  color: var(--foreground);
+  font-family: var(--font-body);
+  transition: border-color 0.2s ease-in-out;
+  font-size: 16px; /* Prevent iOS zoom */
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem; /* 48px */
+  border-radius: 0; /* Sharp edges */
+  background-color: transparent;
+  color: var(--foreground);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+}
+
+.icon-button:hover {
+  background-color: rgba(124, 114, 150, 0.1);
+}
+
+.icon-button.active {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LUXURY ANIMATION SYSTEM — Shri Hari Jewellers
+   GPU-accelerated • 60fps • prefers-reduced-motion aware
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Gold shimmer sweep — for accent lines & highlights ── */
+@keyframes goldShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.animate-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    #C9A84C 0%,
+    #E8D48B 40%,
+    #C9A84C 60%,
+    #B8923E 100%
+  );
+  background-size: 200% auto;
+  animation: goldShimmer 3s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ── Gold hairline shimmer ── */
+@keyframes hairlineShimmer {
+  0%   { opacity: 0.4; transform: scaleX(0.95); }
+  50%  { opacity: 1;   transform: scaleX(1);    }
+  100% { opacity: 0.4; transform: scaleX(0.95); }
+}
+
+.animate-hairline {
+  animation: hairlineShimmer 3.5s ease-in-out infinite;
+}
+
+/* ── Film grain texture — premium depth overlay ── */
+@keyframes grainShift {
+  0%, 100% { transform: translate(0, 0); }
+  10%  { transform: translate(-2%, -3%); }
+  20%  { transform: translate(3%,  2%); }
+  30%  { transform: translate(-1%,  4%); }
+  40%  { transform: translate(2%, -1%); }
+  50%  { transform: translate(-3%,  3%); }
+  60%  { transform: translate(1%, -2%); }
+  70%  { transform: translate(-2%,  1%); }
+  80%  { transform: translate(3%, -3%); }
+  90%  { transform: translate(-1%,  2%); }
+}
+
+.luxury-grain {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  animation: grainShift 0.5s steps(1) infinite;
+  pointer-events: none;
+}
+
+/* ── Scroll reveal utility — for elements not using Framer Motion ── */
+@keyframes fadeUpIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeUpIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Page enter — used by layout transition ── */
+@keyframes pageEnter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Scrollbar hiding utility ── */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── GPU acceleration hint for animated elements ── */
+.will-change-transform {
+  will-change: transform;
+}
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION — Full accessibility override
+   Respects OS "Reduce Motion" setting
+═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep layout shifts from Framer Motion */
+  .will-change-transform,
+  .will-change-opacity {
+    will-change: auto;
+  }
+}
+
