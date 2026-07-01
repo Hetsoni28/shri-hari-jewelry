@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   page: {
     backgroundColor: '#FDFAFF',
     padding: 40,
+    paddingBottom: 65,         // extra space so grid never overlaps the absolute footer
     fontFamily: 'Helvetica',
   },
   coverPage: {
@@ -129,23 +130,22 @@ const styles = StyleSheet.create({
   // Title Box
   titleBox: {
     backgroundColor: '#FFFFFF',
-    paddingVertical: 40,
-    paddingHorizontal: 60,
+    paddingVertical: 36,
+    paddingHorizontal: 36,
     alignItems: 'center',
-    width: '85%',
+    width: '95%',
     borderWidth: 1,
     borderColor: '#F0F0F0',
-    // simulate drop shadow with border
     borderBottomWidth: 3,
     borderBottomColor: '#F5F5F5',
   },
   coverTitle: {
-    fontSize: 26,
+    fontSize: 22,
     color: '#111111',
     fontFamily: 'Times-Bold',
     textTransform: 'uppercase',
-    letterSpacing: 5,
-    marginBottom: 16,
+    letterSpacing: 2,
+    marginBottom: 14,
     textAlign: 'center',
   },
   coverSubtitle: {
@@ -209,17 +209,20 @@ const styles = StyleSheet.create({
   },
   productCard: {
     width: '48%',
-    marginBottom: 30,
+    marginBottom: 16,          // reduced so 2 rows fit on one A4 page
     backgroundColor: '#FFFFFF',
     border: '1pt solid #F0F0F0',
-    padding: 10,
+    overflow: 'hidden',
   },
   productImage: {
     width: '100%',
-    height: 250,
-    objectFit: 'cover',
-    marginBottom: 10,
+    height: 250,               // tuned for 2×2 grid on A4
+    objectFit: 'contain',      // full image — never crops necklaces
     backgroundColor: '#FAFAFA',
+  },
+  productCardText: {
+    padding: 10,
+    paddingTop: 8,
   },
   productCategory: {
     fontSize: 8,
@@ -229,21 +232,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   productTitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#111111',
     fontFamily: 'Times-Bold',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   footerInner: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 25,
     left: 40,
     right: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: '#F0F0F0',
-    paddingTop: 10,
+    paddingTop: 8,
   },
   footerInnerText: {
     fontSize: 8,
@@ -338,28 +341,62 @@ export default function CatalogDocument({ title, subtitle, products }: CatalogDo
         </View>
       </Page>
 
-      {/* Product Pages */}
-      <Page size="A4" style={styles.page} wrap>
-        <View style={styles.header} fixed>
-          <Text style={styles.headerText}>{title}</Text>
-          <Text style={styles.headerText}>SHRI HARI JEWELLERS</Text>
-        </View>
-
-        <View style={styles.grid}>
-          {products.map((product) => (
-            <View style={styles.productCard} key={product.id} wrap={false}>
-              <Image src={product.imageSrc} style={styles.productImage} />
-              <Text style={styles.productCategory}>{product.subcategory} {product.category}</Text>
-              <Text style={styles.productTitle}>{product.title}</Text>
+      {/* Product Pages — exactly 4 per page (2 columns × 2 rows) */}
+      {Array.from({ length: Math.ceil(products.length / 4) }, (_, pageIdx) => {
+        const pageProducts = products.slice(pageIdx * 4, pageIdx * 4 + 4);
+        return (
+          <Page key={pageIdx} size="A4" style={styles.page}>
+            {/* Page Header */}
+            <View style={styles.header}>
+              <Text style={styles.headerText}>{title}</Text>
+              <Text style={styles.headerText}>SHRI HARI JEWELLERS</Text>
             </View>
-          ))}
-        </View>
 
-        <View style={styles.footerInner} fixed>
-          <Text style={styles.footerInnerText}>WhatsApp: +91 99781 01081</Text>
-          <Text style={styles.footerInnerText}>www.shriharijewellers.com</Text>
-        </View>
-      </Page>
+            {/* 2×2 product grid */}
+            <View style={styles.grid}>
+              {pageProducts.map((product) => {
+                // Only render <Image> when proxy returned valid base64
+                // Raw URLs can silently fail in react-pdf → blank white box
+                const hasValidImage =
+                  typeof product.imageSrc === 'string' &&
+                  product.imageSrc.startsWith('data:');
+                return (
+                  <View style={styles.productCard} key={product.id}>
+                    {hasValidImage ? (
+                      <Image src={product.imageSrc} style={styles.productImage} />
+                    ) : (
+                      <View
+                        style={[
+                          styles.productImage,
+                          { backgroundColor: '#F5F0E8', alignItems: 'center', justifyContent: 'center' },
+                        ]}
+                      >
+                        <Text style={{ fontSize: 9, color: '#B8860B', textAlign: 'center', letterSpacing: 1 }}>
+                          IMAGE{`\n`}LOADING
+                        </Text>
+                      </View>
+                    )}
+                    <View style={styles.productCardText}>
+                      <Text style={styles.productCategory}>{product.subcategory} {product.category}</Text>
+                      <Text style={styles.productTitle}>{product.title}</Text>
+                    </View>
+                  </View>
+                );
+              })}
+              {/* Phantom card to keep 2-col alignment when odd count on last page */}
+              {pageProducts.length % 2 !== 0 && (
+                <View style={[styles.productCard, { backgroundColor: 'transparent', borderColor: 'transparent' }]} />
+              )}
+            </View>
+
+            {/* Page Footer */}
+            <View style={styles.footerInner}>
+              <Text style={styles.footerInnerText}>WhatsApp: +91 99781 01081</Text>
+              <Text style={styles.footerInnerText}>www.shriharijewellers.com</Text>
+            </View>
+          </Page>
+        );
+      })}
     </Document>
   );
 }

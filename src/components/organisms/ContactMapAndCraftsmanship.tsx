@@ -16,7 +16,7 @@ export default function ContactMapAndCraftsmanship() {
                 Craftsmanship<br />Beyond<br />Boundaries
               </h2>
               <p className="text-[var(--color-neutral)] text-sm md:text-base leading-relaxed mb-8 max-w-md mx-auto md:mx-0">
-                Every piece at Shri Hari is a testament to four decades of trust and artistic evolution. Explore our curated retail collections.
+                Every piece at Shri Hari is a testament to over two decades of trust and artistic evolution. Explore our curated retail collections.
               </p>
               <Link href="/catalog" className="inline-block border border-[var(--color-secondary)] hover:border-[var(--color-tertiary)] hover:text-[var(--color-tertiary)] text-[var(--color-primary)] py-3 px-8 text-xs font-bold tracking-[0.2em] uppercase transition-colors">
                 View Collections

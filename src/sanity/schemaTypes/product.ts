@@ -18,6 +18,13 @@ export default defineType({
       options: {
         source: 'name',
         maxLength: 96,
+        // Custom slugify: converts spaces & special chars to hyphens, lowercase
+        slugify: (input: string) =>
+          input
+            .toLowerCase()
+            .trim()
+            .replace(/[\s\W-]+/g, '-')   // spaces & non-word chars → hyphens
+            .replace(/^-+|-+$/g, ''),    // strip leading/trailing hyphens
       },
       validation: (Rule) => Rule.required(),
     }),
@@ -46,6 +53,7 @@ export default defineType({
           {title: 'Bangles', value: 'Bangles'},
           {title: 'Bracelets', value: 'Bracelets'},
           {title: 'Bracelet', value: 'Bracelet'},
+          {title: 'Diamond', value: 'Diamond'},
           {title: 'Set', value: 'Set'},
           {title: 'Jhumar', value: 'Jhumar'},
           {title: 'MS Lockets', value: 'MS Lockets'},
@@ -68,9 +76,11 @@ export default defineType({
       options: {
         list: [
           {title: 'Antique', value: 'Antique'},
-          {title: 'Women', value: 'Women'},
-          {title: 'Men', value: 'Men'},
-          {title: 'Kids', value: 'Kids'},
+          {title: 'Diamond', value: 'Diamond'},
+          {title: 'Women',   value: 'Women'},
+          {title: 'Men',     value: 'Men'},
+          {title: 'Unisex',  value: 'Unisex'},
+          {title: 'Kids',    value: 'Kids'},
         ],
       },
     }),
@@ -79,6 +89,18 @@ export default defineType({
       title: 'Is New Arrival?',
       type: 'boolean',
       initialValue: false,
+    }),
+    defineField({
+      name: 'metalType',
+      title: 'Metal Type',
+      type: 'string',
+      initialValue: 'Gold',
+      options: {
+        list: [
+          {title: '🥇 Gold',   value: 'Gold'},
+          {title: '🩶 Silver', value: 'Silver'},
+        ],
+      },
     }),
   ],
 })

@@ -2,7 +2,7 @@ export const shopInfo = {
   name: "Shri Hari Jewellers",
   subtitle: "(Padrawala)",
   owner: "Soni Hardik Jayeshkumar",
-  phone1: "+91 99790 10081",
+  phone1: "+91 99781 01081",
   phone2: "+91 99243 26574",
   email: "contact@shriharijewellers.com",
   address: {

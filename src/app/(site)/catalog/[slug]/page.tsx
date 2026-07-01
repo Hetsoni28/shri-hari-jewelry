@@ -12,7 +12,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = await client.fetch(productBySlugQuery, { slug: resolvedParams.slug });
+  // Decode URI component to handle slugs with spaces or special characters
+  const slug = decodeURIComponent(resolvedParams.slug);
+  const product = await client.fetch(productBySlugQuery, { slug });
   const allProducts = await client.fetch(productsQuery);
 
   if (!product) {
@@ -42,7 +44,12 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
       </div>
 
       {/* Related Products Section */}
-      <RelatedProducts currentProductId={product._id} allProducts={allProducts} />
+      <RelatedProducts 
+        currentProductId={product._id} 
+        currentCategory={product.category}
+        currentSubcategory={product.subcategory}
+        allProducts={allProducts} 
+      />
     </div>
   );
 }

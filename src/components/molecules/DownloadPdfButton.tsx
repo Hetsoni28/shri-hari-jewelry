@@ -22,20 +22,26 @@ interface DownloadPdfButtonProps {
   products: CatalogProduct[];
   variant?: 'primary' | 'secondary' | 'full' | 'row';
   count?: number;
+  previewImage?: string; // First product thumbnail shown on the button
 }
 
 type ButtonState = 'idle' | 'loading' | 'done';
 
-export default function DownloadPdfButton({ title, pdfTitle, subtitle, filename, products, variant = 'primary', count }: DownloadPdfButtonProps) {
+export default function DownloadPdfButton({
+  title, pdfTitle, subtitle, filename, products,
+  variant = 'primary', count, previewImage,
+}: DownloadPdfButtonProps) {
   const [state, setState] = useState<ButtonState>('idle');
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
 
   const handleDownload = async () => {
     if (state !== 'idle') return;
     setState('loading');
+    setProgress({ done: 0, total: products.length });
+
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      
-      // Fetch images as Base64 via our Next.js backend proxy to completely bypass mobile network/CORS issues in react-pdf
+
       const fetchBase64 = async (url: string): Promise<string> => {
         try {
           const proxyUrl = `/api/pdf-image?url=${encodeURIComponent(url)}`;
@@ -45,28 +51,35 @@ export default function DownloadPdfButton({ title, pdfTitle, subtitle, filename,
           return data.base64 || url;
         } catch (e) {
           console.error("Failed to fetch base64:", e);
-          return url; // Fallback to raw URL if fetch fails
+          return url;
         }
       };
 
-      const processedProducts = await Promise.all(products.map(async (p) => {
-        let src = p.imageSrc;
-        if (src.startsWith('/')) {
-          src = `${origin}${src}`;
-        } else if (src.startsWith('//')) {
-          src = `https:${src}`;
-        }
-        
-        let finalSrc = src;
-        if (src) {
-          finalSrc = await fetchBase64(src);
-        }
+      // ── Batched fetching: 6 at a time with 80ms gap between batches ──────
+      // Prevents rate-limiting that causes 9-10s timeouts with Promise.all
+      const BATCH_SIZE = 6;
+      const processedProducts: CatalogProduct[] = [];
+      let doneCount = 0;
 
-        return { ...p, imageSrc: finalSrc };
-      }));
+      for (let i = 0; i < products.length; i += BATCH_SIZE) {
+        const batch = products.slice(i, i + BATCH_SIZE);
+        const batchResults = await Promise.all(batch.map(async (p) => {
+          let src = p.imageSrc;
+          if (src.startsWith('/')) src = `${origin}${src}`;
+          else if (src.startsWith('//')) src = `https:${src}`;
+          const finalSrc = src ? await fetchBase64(src) : src;
+          doneCount++;
+          setProgress({ done: doneCount, total: products.length });
+          return { ...p, imageSrc: finalSrc };
+        }));
+        processedProducts.push(...batchResults);
+        // Brief pause between batches to avoid Sanity CDN rate limiting
+        if (i + BATCH_SIZE < products.length) {
+          await new Promise((r) => setTimeout(r, 80));
+        }
+      }
 
       const finalPdfTitle = pdfTitle || title;
-
       const blob = await pdf(
         <CatalogDocument title={finalPdfTitle} subtitle={subtitle} products={processedProducts} />
       ).toBlob();
@@ -81,7 +94,6 @@ export default function DownloadPdfButton({ title, pdfTitle, subtitle, filename,
       URL.revokeObjectURL(url);
 
       setState('done');
-      // Reset after 2.5s
       setTimeout(() => setState('idle'), 2500);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -90,162 +102,189 @@ export default function DownloadPdfButton({ title, pdfTitle, subtitle, filename,
     }
   };
 
-  const baseClasses = "relative flex items-center justify-center gap-3 py-4 px-8 text-xs font-bold uppercase tracking-[0.2em] w-full sm:w-auto overflow-hidden min-h-[52px]";
-
-  const variantClasses = {
-    primary:   "bg-[var(--color-primary)] text-white",
-    secondary: "bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/30",
-    full:      "bg-[var(--color-tertiary)] text-white w-full max-w-md mx-auto text-sm py-5",
-    row:       "bg-white border border-[var(--color-secondary)]/15 text-[var(--foreground)] w-full px-5 py-3.5 hover:border-[var(--color-tertiary)] hover:bg-[var(--color-background-light)] text-[10px] sm:text-xs text-left transition-all duration-300",
-  };
-
   const isDone    = state === 'done';
   const isLoading = state === 'loading';
 
+  // ─── Download icon SVG ───────────────────────────────────────────────────
+  const DownloadIcon = ({ size = 14 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  );
+
+  const SpinIcon = ({ size = 14 }: { size?: number }) => (
+    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+      <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
+    </svg>
+  );
+
+  // ─── FULL variant (Master Inventory button) ──────────────────────────────
+  if (variant === 'full') {
+    return (
+      <div className="flex flex-col items-center gap-3">
+        {count !== undefined && (
+          <p className="text-xs text-[var(--color-secondary)] tracking-widest uppercase">
+            {count} products in catalog
+          </p>
+        )}
+        <motion.button
+          onClick={handleDownload}
+          disabled={isLoading}
+          className="relative flex items-center justify-center gap-3 py-5 px-10 text-sm font-bold uppercase tracking-[0.2em] w-full max-w-md mx-auto bg-[var(--color-tertiary)] text-white overflow-hidden"
+          whileHover={!isLoading ? { y: -2, boxShadow: '0 12px 32px -8px rgba(201,168,76,0.35)', transition: { duration: 0.22 } } : {}}
+          whileTap={!isLoading ? { scale: 0.98, transition: { duration: 0.1 } } : {}}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {!isLoading && !isDone && (
+              <motion.span key="idle" className="flex items-center gap-3"
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.22 }}>
+                <DownloadIcon size={17} />
+                <span>{title}</span>
+              </motion.span>
+            )}
+            {isLoading && (
+              <motion.span key="loading" className="flex items-center gap-3"
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.22 }}>
+                <SpinIcon size={17} />
+                <span>Preparing…</span>
+              </motion.span>
+            )}
+            {isDone && (
+              <motion.span key="done" className="flex items-center gap-3"
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.22 }}>
+                <span>Downloaded!</span>
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </div>
+    );
+  }
+
+  // ─── ROW variant (category / subcategory buttons) ────────────────────────
   return (
     <motion.button
       onClick={handleDownload}
       disabled={isLoading}
-      className={`${baseClasses} ${variantClasses[variant]}`}
-      whileHover={!isLoading ? {
-        y: variant === 'row' ? -1 : -2,
-        boxShadow: variant === 'full'
-          ? '0 12px 32px -8px rgba(201,168,76,0.35)'
-          : variant === 'row' 
-            ? '0 4px 12px -4px rgba(0,0,0,0.05)'
-            : '0 10px 28px -8px rgba(128,105,191,0.30)',
-        transition: { duration: 0.22 },
-      } : {}}
+      className="relative flex items-center gap-0 w-full bg-white border border-[var(--color-secondary)]/15 hover:border-[var(--color-tertiary)] hover:bg-[var(--color-background-light)] transition-all duration-300 overflow-hidden group"
+      whileHover={!isLoading ? { y: -1, boxShadow: '0 4px 14px -4px rgba(0,0,0,0.07)', transition: { duration: 0.22 } } : {}}
       whileTap={!isLoading ? { scale: 0.98, transition: { duration: 0.1 } } : {}}
-      animate={{
-        opacity: isDone ? 1 : isLoading ? 0.85 : 1,
-      }}
-      transition={{ duration: 0.2 }}
     >
-      {/* Gold shimmer sweep on done */}
+      {/* ── Thumbnail from Sanity ── */}
+      <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-[var(--color-background-light)] overflow-hidden">
+        {previewImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={previewImage}
+            alt={title}
+            className="w-full h-full object-contain"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1" className="text-[var(--color-secondary)]/30">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+        )}
+      </div>
+
+      {/* ── Text content ── */}
+      <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 py-2 min-w-0">
+        <AnimatePresence mode="wait" initial={false}>
+          {!isLoading && !isDone && (
+            <motion.div key="idle"
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}>
+              <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground)] leading-tight truncate">
+                {title}
+              </p>
+              {count !== undefined && (
+                <p className="text-[9px] text-[var(--color-tertiary)] font-semibold mt-0.5 tracking-wide">
+                  {count} {count === 1 ? 'item' : 'items'}
+                </p>
+              )}
+            </motion.div>
+          )}
+          {isLoading && (
+            <motion.div key="loading"
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-secondary)]">
+                {title}
+              </p>
+              <p className="text-[9px] text-[var(--color-tertiary)] mt-0.5 font-semibold">
+                {progress.total > 0
+                  ? `Fetching ${Math.min(progress.done, progress.total)}/${progress.total}…`
+                  : 'Starting…'}
+              </p>
+              {/* Mini progress bar */}
+              {progress.total > 0 && (
+                <div className="mt-1 h-0.5 w-full bg-[var(--color-secondary)]/10 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-[var(--color-tertiary)] rounded-full"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${Math.round((progress.done / progress.total) * 100)}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              )}
+            </motion.div>
+          )}
+          {isDone && (
+            <motion.div key="done"
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18 }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--color-tertiary)]">
+                Downloaded!
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Right action icon ── */}
+      <div className="shrink-0 px-3 sm:px-4 text-[var(--color-secondary)]/40 group-hover:text-[var(--color-tertiary)] transition-colors duration-200">
+        <AnimatePresence mode="wait" initial={false}>
+          {isLoading ? (
+            <motion.span key="spin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <SpinIcon size={14} />
+            </motion.span>
+          ) : isDone ? (
+            <motion.svg key="check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              className="text-[var(--color-tertiary)]"
+              initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: luxuryEasing.reveal }}>
+              <polyline points="20 6 9 17 4 12" />
+            </motion.svg>
+          ) : (
+            <motion.span key="dl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <DownloadIcon size={14} />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Shimmer on done */}
       <AnimatePresence>
         {isDone && (
           <motion.span
             key="shimmer"
-            className={`absolute inset-0 bg-gradient-to-r ${variant === 'row' ? 'from-transparent via-[var(--color-tertiary)]/10 to-transparent' : 'from-transparent via-white/20 to-transparent'}`}
-            initial={{ x: '-100%' }}
-            animate={{ x: '200%' }}
-            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-tertiary)]/8 to-transparent pointer-events-none"
+            initial={{ x: '-100%' }} animate={{ x: '200%' }} exit={{ opacity: 0 }}
             transition={{ duration: 0.7, ease: luxuryEasing.elegant }}
           />
-        )}
-      </AnimatePresence>
-
-      {/* ── IDLE state ── */}
-      <AnimatePresence mode="wait" initial={false}>
-        {state === 'idle' && (
-          <motion.span
-            key="idle"
-            className={`flex items-center ${variant === 'row' ? 'justify-between w-full' : 'gap-3 justify-center'}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: luxuryEasing.swift }}
-          >
-            {variant === 'row' ? (
-              <>
-                <span className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="font-bold tracking-[0.1em]">{title}</span>
-                  {count !== undefined && (
-                    <span className="text-[var(--color-secondary)]/60 font-medium tabular-nums tracking-normal text-[9px] sm:text-[10px]">({count})</span>
-                  )}
-                </span>
-                <svg className="shrink-0 text-[var(--color-secondary)] opacity-60" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-              </>
-            ) : (
-              <>
-                <svg className="shrink-0" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                <span className="leading-snug">{title}</span>
-              </>
-            )}
-          </motion.span>
-        )}
-
-        {/* ── LOADING state ── */}
-        {state === 'loading' && (
-          <motion.span
-            key="loading"
-            className={`flex items-center ${variant === 'row' ? 'justify-between w-full text-[var(--color-secondary)]' : 'gap-3 justify-center'}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: luxuryEasing.swift }}
-          >
-            {variant === 'row' ? (
-              <>
-                <span className="font-bold tracking-[0.1em]">{title}</span>
-                <svg className="shrink-0 animate-spin text-[var(--color-tertiary)]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
-                  <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
-                </svg>
-              </>
-            ) : (
-              <>
-                <svg className="shrink-0 animate-spin" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
-                  <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
-                </svg>
-                <span>Preparing…</span>
-              </>
-            )}
-          </motion.span>
-        )}
-
-        {/* ── DONE state ── */}
-        {state === 'done' && (
-          <motion.span
-            key="done"
-            className={`flex items-center ${variant === 'row' ? 'justify-between w-full text-[var(--color-tertiary)]' : 'gap-3 justify-center'}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: luxuryEasing.swift }}
-          >
-            {variant === 'row' ? (
-              <>
-                <span className="font-bold tracking-[0.1em]">Downloaded!</span>
-                <motion.svg
-                  className="shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4 }}
-                >
-                  <motion.polyline points="20 6 9 17 4 12" />
-                </motion.svg>
-              </>
-            ) : (
-              <>
-                <motion.svg
-                  className="shrink-0"
-                  width="17" height="17" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.4, ease: luxuryEasing.reveal }}
-                >
-                  <motion.polyline
-                    points="20 6 9 17 4 12"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.4, ease: luxuryEasing.reveal, delay: 0.05 }}
-                  />
-                </motion.svg>
-                <span>Downloaded!</span>
-              </>
-            )}
-          </motion.span>
         )}
       </AnimatePresence>
     </motion.button>

@@ -1,37 +1,37 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from "@/components/organisms/Navbar";
 import Footer from "@/components/organisms/Footer";
 import { WishlistProvider } from "@/context/WishlistContext";
 import WhatsAppFloatingCTA from "@/components/molecules/WhatsAppFloatingCTA";
+import NavigationProgress from "@/components/molecules/NavigationProgress";
+import GoldRateWidget from "@/components/organisms/GoldRateWidget";
 
 export default function SiteLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-
   return (
     <WishlistProvider>
-      <div className="flex flex-col min-h-screen w-full">
+      {/* Gold top progress bar — appears immediately on every link click */}
+      <NavigationProgress />
+      <div className="flex flex-col min-h-screen w-full bg-white">
         <Navbar />
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.main
-            key={pathname}
-            className="flex-grow w-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {children}
-          </motion.main>
-        </AnimatePresence>
+        {/*
+          NO AnimatePresence / opacity transition here.
+          Reason: AnimatePresence mode="sync" caused BOTH old + new pages to
+          render simultaneously at opacity=0, revealing the black html background
+          → blank/black screen on every navigation.
+          The loading.tsx skeleton for each route handles the visual transition
+          while the server fetches data. The gold top bar gives instant feedback.
+        */}
+        <main className="flex-grow w-full">
+          {children}
+        </main>
         <Footer />
         <WhatsAppFloatingCTA />
+        <GoldRateWidget />
       </div>
     </WishlistProvider>
   );

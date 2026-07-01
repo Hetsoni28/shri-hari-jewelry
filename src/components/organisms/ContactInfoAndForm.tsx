@@ -66,7 +66,22 @@ export default function ContactInfoAndForm() {
                     info@shriharijewellers.com
                   </a>
 
-                  <a href={`https://wa.me/919978101081`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center space-x-2 mt-4 text-[10px] font-bold text-[var(--color-tertiary)] uppercase tracking-widest hover:brightness-90 transition-colors">
+                  <a href={`https://wa.me/919978101081?text=${encodeURIComponent(
+`🌟 *General Inquiry – Shri Hari Jewellers*
+
+Namaste! 🙏
+
+I am visiting your website *shriharijewellers.com* and have an inquiry.
+
+I am looking for:
+• 💍 Type: (e.g. Ring / Necklace / Earrings / Bracelet)
+• 👤 For: (e.g. Women / Men / Kids / Antique)
+• 💛 Purity preference: (e.g. 18K / 22K)
+• 💰 Budget range: 
+
+Could you please assist me?
+
+Thank you! 🙏`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center space-x-2 mt-4 text-[10px] font-bold text-[var(--color-tertiary)] uppercase tracking-widest hover:brightness-90 transition-colors">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                     </svg>

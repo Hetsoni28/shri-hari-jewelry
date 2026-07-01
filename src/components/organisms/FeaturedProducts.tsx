@@ -78,9 +78,9 @@ export default function FeaturedProducts({ products = [] }: { products?: Product
                 whileHover="hover"
                 className="group cursor-pointer block"
               >
-                <Link href={`/catalog/${product.slug}`} className="block">
+                <Link href={`/catalog/${encodeURIComponent(product.slug)}`} className="block">
                   {/* Image */}
-                  <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-background-light)] mb-5 border border-[var(--color-secondary)]/10 group-hover:border-[var(--color-tertiary)]/30 transition-colors duration-500">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#FBF8F3] mb-5 border border-[var(--color-secondary)]/10 group-hover:border-[var(--color-tertiary)]/30 transition-colors duration-500">
                     <motion.div
                       variants={imageHoverVariant}
                       initial="rest"
@@ -93,7 +93,7 @@ export default function FeaturedProducts({ products = [] }: { products?: Product
                           : '/images/placeholder.png'}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                         sizes="(max-width: 767px) 100vw, 33vw"
                       />
                     </motion.div>

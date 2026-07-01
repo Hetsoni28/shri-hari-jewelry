@@ -10,7 +10,14 @@ export default function WhatsAppFloatingCTA() {
 
   return (
     <motion.a
-      href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=Hello! I am visiting your website and have an inquiry.`}
+      href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(
+`Namaste! 🙏
+
+I'm browsing *shriharijewellers.com* and would love some help finding the right jewelry.
+
+Could you please guide me?
+
+Thank you! 😊`)}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

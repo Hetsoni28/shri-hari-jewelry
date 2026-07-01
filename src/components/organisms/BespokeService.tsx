@@ -62,7 +62,23 @@ export default function BespokeService() {
 
       <motion.a
         variants={fadeUpVariant}
-        href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=Hello! I am interested in your bespoke design service.`}
+        href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(
+`Namaste! 🙏
+
+I'm interested in getting a *custom jewelry piece* made at Shri Hari Jewellers.
+
+Here are my requirements:
+• Jewelry type: (e.g. Ring / Necklace / Earrings / Bangles)
+• Gold purity: (18K / 22K / 24K)
+• Design style: (Traditional / Modern / Antique)
+• Occasion: (Wedding / Daily wear / Gift)
+• Budget: ₹_____ approx.
+• Required by: (date if any)
+
+Could you please guide me on the next steps for a design consultation?
+
+Thank you! 😊
+— shriharijewellers.com`)}`}
         target="_blank"
         rel="noopener noreferrer"
         whileHover={{ y: -2, transition: { duration: 0.25 } }}

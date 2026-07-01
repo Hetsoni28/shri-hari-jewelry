@@ -23,10 +23,10 @@ export default function ProductCard({ id, title, category, imageSrc, isNewArriva
       whileHover="hover"
       className="block h-full"
     >
-      <Link href={`/catalog/${id}`} className="group block h-full w-full">
+      <Link href={`/catalog/${encodeURIComponent(id)}`} className="group block h-full w-full">
 
         {/* ── Image ── */}
-        <div className="relative aspect-[4/5] bg-[var(--color-background-light)] mb-3 sm:mb-4 overflow-hidden border border-[var(--color-secondary)]/15 group-hover:border-[var(--color-tertiary)]/40 transition-colors duration-500">
+        <div className="relative aspect-[4/5] bg-[#FBF8F3] mb-3 sm:mb-4 overflow-hidden border border-[var(--color-secondary)]/15 group-hover:border-[var(--color-tertiary)]/40 transition-colors duration-500">
           {isNewArrival && (
             <div className="absolute top-3 left-3 z-20">
               <Badge variant="primary">New Arrival</Badge>
@@ -43,7 +43,7 @@ export default function ProductCard({ id, title, category, imageSrc, isNewArriva
               src={imageSrc}
               alt={title}
               fill
-              className="object-cover z-0"
+              className="object-contain z-0"
             />
           </motion.div>
 

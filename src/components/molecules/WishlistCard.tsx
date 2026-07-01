@@ -33,22 +33,23 @@ export default function WishlistCard({
       {onRemove && (
         <button 
           onClick={onRemove}
-          className="absolute top-4 right-4 z-20 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-[var(--color-primary)] hover:text-red-500 hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
+          className="absolute top-3 right-3 z-20 w-9 h-9 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-[var(--color-primary)] hover:text-red-500 hover:bg-white transition-all shadow-md
+            opacity-100 md:opacity-0 md:group-hover:opacity-100"
           aria-label="Remove from wishlist"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       )}
 
-      <div className="relative aspect-[4/5] overflow-hidden bg-[var(--color-background-light)] w-full">
+      <div className="relative aspect-square overflow-hidden bg-[var(--color-background-light)] w-full">
         <Image 
           src={imageSrc} 
           alt={title} 
           fill 
-          className="object-cover group-hover:scale-105 transition-transform duration-700" 
+          className="object-contain group-hover:scale-105 transition-transform duration-700" 
           sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
@@ -59,7 +60,7 @@ export default function WishlistCard({
             {title}
           </h3>
           <div className="flex flex-wrap justify-center gap-3 mb-6">
-            <Badge variant="outline">{badge1}</Badge>
+            {badge1 && <Badge variant="outline">{badge1}</Badge>}
             {badge2 && <Badge variant="secondary">{badge2}</Badge>}
           </div>
         </div>

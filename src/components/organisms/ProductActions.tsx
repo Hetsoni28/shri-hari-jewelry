@@ -4,19 +4,45 @@ import { motion } from 'framer-motion';
 import { shopInfo } from '@/data/shopInfo';
 import { useWishlist } from '@/context/WishlistContext';
 import { urlForImage } from '@/sanity/image';
+import { usePriceCalculator, type MetalType, type GoldPurity } from '@/hooks/usePriceCalculator';
+
 export interface ProductActionData {
   _id: string;
   name: string;
   images?: Record<string, unknown>[];
   purity?: string;
   weight?: string;
+  netWeight?: string;
   category?: string;
   subcategory?: string;
+  tag?: string;
+  isNewArrival?: boolean;
+  metalType?: string;
+  makingCharge?: number;
+  makingChargeType?: 'flat' | 'per_gram';
+  stoneCharge?: number;
 }
 
 export default function ProductActions({ product }: { product: ProductActionData }) {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const isAdded = isInWishlist(product._id);
+
+  // Parse weight
+  const parsedWeight = parseFloat((product.netWeight || product.weight)?.replace(/[^0-9.]/g, '') || '0');
+  
+  // Calculate price dynamically
+  const breakdown = usePriceCalculator({
+    metalType: (product.metalType as MetalType) || 'Gold',
+    purity: product.purity as GoldPurity,
+    netWeight: parsedWeight,
+    makingCharge: product.makingCharge || 0,
+    makingChargeType: product.makingChargeType || 'flat',
+    stoneCharge: product.stoneCharge || 0,
+    gstPercent: 3
+  });
+
+  const canShowPrice = parsedWeight > 0 && product.makingCharge !== undefined && breakdown !== null;
+  const currentPriceText = canShowPrice ? `\n\nCurrent Price:\n₹${breakdown.total.toLocaleString('en-IN')}` : '';
 
   const handleToggle = () => {
     if (isAdded) {
@@ -28,19 +54,28 @@ export default function ProductActions({ product }: { product: ProductActionData
           ? urlForImage(product.images[0])?.url() || '/images/placeholder.png'
           : '/images/placeholder.png',
         title: product.name,
-        badge1: product.purity,
+        badge1: product.purity || '',
         badge2: product.tag || undefined,
-        isNewArrival: product.isNewArrival,
+        isNewArrival: !!product.isNewArrival,
       });
     }
   };
+
+  const whatsappMessage = `Hello Shri Hari Jewellers,
+
+I am interested in this jewellery.
+
+Product:
+*${product.name}*${product.category ? `\nCategory: ${product.category}${product.subcategory ? ` › ${product.subcategory}` : ''}` : ''}${product.purity ? `\nPurity: ${product.purity}` : ''}${product.weight || product.netWeight ? `\nWeight: ${product.weight || product.netWeight}` : ''}${currentPriceText}
+
+Please share more details.`;
 
   return (
     <div className="flex flex-col space-y-3 sm:space-y-4">
 
       {/* ── WhatsApp CTA ── solid gold button */}
       <motion.a
-        href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=Hello! I am inquiring about ${encodeURIComponent(product.name)}.`}
+        href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(whatsappMessage)}`}
         target="_blank"
         rel="noopener noreferrer"
         className="w-full flex items-center justify-center gap-3 bg-[#C9A84C] hover:bg-[#b8933d] text-white py-4 px-6 text-xs font-bold tracking-[0.18em] uppercase transition-colors duration-300"

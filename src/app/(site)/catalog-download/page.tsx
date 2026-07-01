@@ -14,6 +14,7 @@ export default async function CatalogDownloadPage() {
     _id: string;
     category?: string;
     subcategory?: string;
+    metalType?: string;
     name?: string;
     images?: any[];
   }
@@ -22,8 +23,12 @@ export default async function CatalogDownloadPage() {
     id: p._id,
     category: p.category || '',
     subcategory: p.subcategory || '',
+    metalType: p.metalType || 'Gold', // default Gold for untagged legacy products
     title: p.name || '',
-    imageSrc: p.images && p.images.length > 0 ? urlForImage(p.images[0])?.width(1000).quality(90).format('jpg').url() || '' : ''
+    imageSrc: p.images && p.images.length > 0 
+      // 800px is retina-quality for PDF cards (~250pt). 1500 was 3× oversized → slow.
+      ? urlForImage(p.images[0])?.width(800).quality(88).format('jpg').url() || '' 
+      : ''
   }));
 
   return (

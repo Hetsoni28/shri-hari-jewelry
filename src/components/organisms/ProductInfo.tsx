@@ -1,4 +1,24 @@
-export default function ProductInfo({ product }: { product: { category?: string; subcategory?: string; name: string; description?: string } }) {
+import DynamicPrice from '@/components/atoms/DynamicPrice';
+import type { MetalType, GoldPurity } from '@/hooks/usePriceCalculator';
+
+export default function ProductInfo({ product }: { product: { 
+  category?: string; 
+  subcategory?: string; 
+  metalType?: string; 
+  purity?: string; 
+  netWeight?: string; 
+  name: string; 
+  description?: string;
+  makingCharge?: number;
+  makingChargeType?: 'flat' | 'per_gram';
+  stoneCharge?: number;
+} }) {
+  // Parse weight string "45g" -> 45
+  const parsedWeight = parseFloat(product.netWeight?.replace(/[^0-9.]/g, '') || '0');
+
+  // We only show price if we have weight and making charge
+  const canShowPrice = parsedWeight > 0 && product.makingCharge !== undefined;
+
   return (
     <div className="flex flex-col mb-8">
 
@@ -23,11 +43,29 @@ export default function ProductInfo({ product }: { product: { category?: string;
       </h1>
 
       {/* Gold divider */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex items-center gap-3 mb-6">
         <div className="h-px flex-1 bg-gradient-to-r from-[#C9A84C]/60 to-transparent" />
         <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C]" />
         <div className="h-px w-8 bg-[#C9A84C]/40" />
       </div>
+
+      {/* Dynamic Live Price */}
+      {canShowPrice && (
+        <div className="mb-8">
+          <DynamicPrice 
+            input={{
+              metalType: (product.metalType as MetalType) || 'Gold',
+              purity: product.purity as GoldPurity,
+              netWeight: parsedWeight,
+              makingCharge: product.makingCharge || 0,
+              makingChargeType: product.makingChargeType || 'flat',
+              stoneCharge: product.stoneCharge || 0,
+              gstPercent: 3
+            }}
+            size="xl"
+          />
+        </div>
+      )}
 
       {/* Description */}
       {product.description && (
@@ -47,6 +85,35 @@ export default function ProductInfo({ product }: { product: { category?: string;
             <span className="text-[10px] uppercase tracking-[0.2em] text-[#C9A84C] font-bold mb-1">COLLECTION</span>
             <span className="text-body text-sm text-[var(--foreground)] font-medium">{product.subcategory || '—'}</span>
           </div>
+          {product.metalType && (
+            <div className="flex flex-col">
+              <span className={`text-[10px] uppercase tracking-[0.2em] font-bold mb-1 ${
+                product.metalType === 'Gold' ? 'text-[#C9A84C]' : 'text-[#9E9E9E]'
+              }`}>METAL TYPE</span>
+              <span className={`inline-flex items-center gap-1.5 text-sm font-semibold ${
+                product.metalType === 'Gold' ? 'text-[#8B6914]' : 'text-[#4a4a4a]'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${
+                  product.metalType === 'Gold'
+                    ? 'bg-gradient-to-br from-[#F0D060] to-[#C9A84C]'
+                    : 'bg-gradient-to-br from-[#D0D0D0] to-[#9E9E9E]'
+                }`} />
+                {product.metalType} Jewellery
+              </span>
+            </div>
+          )}
+          {product.purity && (
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#C9A84C] font-bold mb-1">PURITY</span>
+              <span className="text-body text-sm text-[var(--foreground)] font-medium">{product.purity}</span>
+            </div>
+          )}
+          {product.netWeight && (
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#C9A84C] font-bold mb-1">APPROX WEIGHT</span>
+              <span className="text-body text-sm text-[var(--foreground)] font-medium">{product.netWeight}</span>
+            </div>
+          )}
         </div>
       </div>
 

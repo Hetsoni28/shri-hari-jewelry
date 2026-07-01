@@ -3,6 +3,7 @@ import CuratedCollections from '@/components/organisms/CuratedCollections';
 import FeaturedProducts from '@/components/organisms/FeaturedProducts';
 import StatsSection from '@/components/organisms/StatsSection';
 import ModernLookBanner from '@/components/organisms/ModernLookBanner';
+
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';
 
@@ -13,7 +14,9 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col w-full bg-[var(--background)]">
+
       <HeroSection />
+
       <CuratedCollections />
       <StatsSection />
       <FeaturedProducts products={products} />
@@ -21,3 +24,4 @@ export default async function Home() {
     </div>
   );
 }
+

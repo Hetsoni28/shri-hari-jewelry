@@ -6,7 +6,7 @@ export default function CollectionsHeader() {
       </h1>
       <div className="h-[1px] w-16 bg-[var(--color-primary)] mb-8"></div>
       <p className="text-body text-[var(--color-neutral)] text-sm md:text-base leading-relaxed">
-        For four decades, Shri Hari Jewellers has stood as a beacon of artisanal excellence in Mogar, Anand. Our legacy is woven into every gram of gold and every facet of silver, preserving the timeless traditions of Indian craftsmanship for generations of families.
+        For over two decades, Shri Hari Jewellers has stood as a beacon of artisanal excellence in Mogar, Anand. Our legacy is woven into every gram of gold and every facet of silver, preserving the timeless traditions of Indian craftsmanship for generations of families.
       </p>
     </div>
   );

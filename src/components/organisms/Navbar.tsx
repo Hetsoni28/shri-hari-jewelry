@@ -164,7 +164,14 @@ export default function Navbar() {
 
             {/* WhatsApp (desktop) */}
             <motion.a
-              href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}`}
+              href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(
+`Namaste! 🙏
+
+I'm visiting *shriharijewellers.com* and would like to inquire about your jewelry collection.
+
+Could you please help me?
+
+Thank you! 😊`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex bg-[var(--color-tertiary)] text-white items-center gap-2 py-2.5 px-5 text-[11px] font-bold tracking-[0.15em] uppercase shadow-md"
@@ -273,7 +280,14 @@ export default function Navbar() {
               {/* WhatsApp CTA */}
               <div className="px-6 py-6 border-t border-[var(--color-secondary)]/20">
                 <motion.a
-                  href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}`}
+                  href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(
+`Namaste! 🙏
+
+I'm visiting *shriharijewellers.com* and would like to inquire about your jewelry collection.
+
+Could you please help me?
+
+Thank you! 😊`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsMobileMenuOpen(false)}

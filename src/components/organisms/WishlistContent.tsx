@@ -31,7 +31,18 @@ export default function WishlistContent() {
           badge2={item.badge2}
           isNewArrival={item.isNewArrival}
           onRemove={() => removeFromWishlist(item.id)}
-          onInquire={() => window.open(`https://wa.me/919924326574?text=Hi! I am inquiring about ${item.title}`, '_blank')}
+          onInquire={() => window.open(`https://wa.me/919978101081?text=${encodeURIComponent(
+`Namaste! 🙏
+
+I saved this piece from your website to my wishlist and would love to know more about it:
+
+*${item.title}*${item.badge1 ? `\nPurity: ${item.badge1}` : ''}${item.badge2 ? ` | ${item.badge2}` : ''}
+
+Could you please share the price and availability?
+I'd also love to see it in person if possible.
+
+Thank you! 😊
+— shriharijewellers.com`)}`, '_blank')}
         />
       ))}
     </div>

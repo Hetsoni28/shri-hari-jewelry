@@ -19,7 +19,7 @@ export default function WishlistCurated({ products = [] }: { products?: { _id: s
 
       <div className="space-y-4">
         {displayProducts.map((item) => (
-          <Link href={`/catalog/${item.slug}`} key={item._id} className="flex gap-4 p-4 bg-white border border-secondary/10 shadow-sm items-center group cursor-pointer hover:border-tertiary/30 transition-colors block">
+          <Link href={`/catalog/${encodeURIComponent(item.slug)}`} key={item._id} className="flex gap-4 p-4 bg-white border border-secondary/10 shadow-sm items-center group cursor-pointer hover:border-tertiary/30 transition-colors block">
             <div className="relative w-20 h-24 flex-shrink-0 overflow-hidden bg-background-light">
               <Image 
                 src={item.images && item.images.length > 0 ? urlForImage(item.images[0])?.url() || '/images/placeholder.png' : '/images/placeholder.png'} 
