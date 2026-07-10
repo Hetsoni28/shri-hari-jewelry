@@ -1,12 +1,15 @@
 import CollectionsHeader from '@/components/organisms/CollectionsHeader';
 import CuratedCollections from '@/components/organisms/CuratedCollections';
-import GoldHeritage from '@/components/organisms/GoldHeritage';
-import SilverStudio from '@/components/organisms/SilverStudio';
-import BespokeService from '@/components/organisms/BespokeService';
+import dynamic from 'next/dynamic';
+
+// Lazy-load heavy below-fold sections to reduce initial lag
+const GoldHeritage   = dynamic(() => import('@/components/organisms/GoldHeritage'),   { ssr: false });
+const SilverStudio   = dynamic(() => import('@/components/organisms/SilverStudio'),   { ssr: false });
+const BespokeService = dynamic(() => import('@/components/organisms/BespokeService'), { ssr: false });
 
 export default function CollectionsPage() {
   return (
-    <div className="flex flex-col w-full bg-[#FDFAFF] min-h-screen pt-12">
+    <div className="flex flex-col w-full bg-[var(--background)] min-h-screen pt-12">
       <CollectionsHeader />
       <CuratedCollections />
       <div className="container mx-auto px-4 max-w-5xl">

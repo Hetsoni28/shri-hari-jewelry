@@ -1,15 +1,18 @@
 import HeroSection from '@/components/organisms/HeroSection';
 import CuratedCollections from '@/components/organisms/CuratedCollections';
-
 import GoldHeritage from '@/components/organisms/GoldHeritage';
 import FeaturedProducts from '@/components/organisms/FeaturedProducts';
 import WhyChooseUs from '@/components/organisms/WhyChooseUs';
-import SilverStudio from '@/components/organisms/SilverStudio';
 import StatsSection from '@/components/organisms/StatsSection';
-import BespokeService from '@/components/organisms/BespokeService';
 import CategoryShowcase from '@/components/organisms/CategoryShowcase';
 import TestimonialsSection from '@/components/organisms/TestimonialsSection';
 import ModernLookBanner from '@/components/organisms/ModernLookBanner';
+
+// Lazy-load heavy sections to reduce initial page load
+import dynamic from 'next/dynamic';
+
+const SilverStudio   = dynamic(() => import('@/components/organisms/SilverStudio'),   { ssr: false });
+const BespokeService = dynamic(() => import('@/components/organisms/BespokeService'), { ssr: false });
 
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';
@@ -28,38 +31,37 @@ export default async function Home() {
       {/* 2. Curated Collections — Category highlights */}
       <CuratedCollections />
 
-
-      {/* 4. The Gold Heritage — Showcase gold product cards */}
+      {/* 3. The Gold Heritage — Showcase gold product cards */}
       <section className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 py-16 sm:py-24">
         <GoldHeritage />
       </section>
 
-      {/* 5. Featured Products — Shop the collection */}
+      {/* 4. Featured Products — Shop the collection */}
       <FeaturedProducts products={products} />
 
-      {/* 6. Why Choose Us — Trust pillars */}
+      {/* 5. Why Choose Us — Trust pillars */}
       <WhyChooseUs />
 
-      {/* 7. The Silver Studio — Silver collection showcase */}
+      {/* 6. The Silver Studio — lazy loaded */}
       <section className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 py-16 sm:py-24">
         <SilverStudio />
       </section>
 
-      {/* 8. Stats Section — Social proof numbers */}
+      {/* 7. Stats Section — Social proof numbers */}
       <StatsSection />
 
-      {/* 9. Bespoke Service — Custom jewelry CTA */}
+      {/* 8. Bespoke Service — lazy loaded */}
       <section className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-10 py-16 sm:py-20">
         <BespokeService />
       </section>
 
-      {/* 10. Category Showcase — Browse all categories */}
+      {/* 9. Category Showcase — Browse all categories */}
       <CategoryShowcase />
 
-      {/* 11. Testimonials — Customer love */}
+      {/* 10. Testimonials — Customer love */}
       <TestimonialsSection />
 
-      {/* 12. Modern Look Banner — Final CTA */}
+      {/* 11. Modern Look Banner — Final CTA */}
       <ModernLookBanner />
 
     </div>
