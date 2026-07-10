@@ -11,8 +11,8 @@ import ModernLookBanner from '@/components/organisms/ModernLookBanner';
 // Lazy-load heavy sections to reduce initial page load
 import dynamic from 'next/dynamic';
 
-const SilverStudio   = dynamic(() => import('@/components/organisms/SilverStudio'),   { ssr: false });
-const BespokeService = dynamic(() => import('@/components/organisms/BespokeService'), { ssr: false });
+const SilverStudio   = dynamic(() => import('@/components/organisms/SilverStudio'));
+const BespokeService = dynamic(() => import('@/components/organisms/BespokeService'));
 
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';

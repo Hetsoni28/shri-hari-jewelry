@@ -3,9 +3,9 @@ import CuratedCollections from '@/components/organisms/CuratedCollections';
 import dynamic from 'next/dynamic';
 
 // Lazy-load heavy below-fold sections to reduce initial lag
-const GoldHeritage   = dynamic(() => import('@/components/organisms/GoldHeritage'),   { ssr: false });
-const SilverStudio   = dynamic(() => import('@/components/organisms/SilverStudio'),   { ssr: false });
-const BespokeService = dynamic(() => import('@/components/organisms/BespokeService'), { ssr: false });
+const GoldHeritage   = dynamic(() => import('@/components/organisms/GoldHeritage'));
+const SilverStudio   = dynamic(() => import('@/components/organisms/SilverStudio'));
+const BespokeService = dynamic(() => import('@/components/organisms/BespokeService'));
 
 export default function CollectionsPage() {
   return (
