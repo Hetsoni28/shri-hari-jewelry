@@ -106,7 +106,7 @@ export default function CatalogFilters({ activeCategory, onCategoryChange, avail
               animate={{ opacity: 1, y: 0,  scale: 1    }}
               exit={{   opacity: 0, y: -8, scale: 0.97 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl min-w-[220px] overflow-hidden"
+              className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 shadow-xl min-w-[220px] overflow-hidden"
               style={{ maxHeight: '60vh', overflowY: 'auto' }}
             >
               {filteredCategories.map((c) => {
@@ -122,10 +122,10 @@ export default function CatalogFilters({ activeCategory, onCategoryChange, avail
                       }`}
                   >
                     <span>{c.label}</span>
-                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors
+                    <span className={`w-4 h-4 border-2 flex items-center justify-center shrink-0 transition-colors
                       ${isActive ? 'border-[#C9A84C]' : 'border-gray-300'}`}
                     >
-                      {isActive && <span className="w-2 h-2 rounded-full bg-[#C9A84C]" />}
+                      {isActive && <span className="w-2 h-2 bg-[#C9A84C]" />}
                     </span>
                   </button>
                 );
@@ -159,7 +159,7 @@ export default function CatalogFilters({ activeCategory, onCategoryChange, avail
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-2xl"
             style={{ maxHeight: '80vh' }}
           >
             {/* Sheet header */}
@@ -170,7 +170,7 @@ export default function CatalogFilters({ activeCategory, onCategoryChange, avail
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+                className="flex items-center justify-center w-9 h-9 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors"
                 aria-label="Close filter"
               >
                 <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -194,10 +194,10 @@ export default function CatalogFilters({ activeCategory, onCategoryChange, avail
                       }`}
                   >
                     <span>{c.label}</span>
-                    <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors
+                    <span className={`w-5 h-5 border-2 flex items-center justify-center shrink-0 transition-colors
                       ${isActive ? 'border-[#C9A84C]' : 'border-gray-300'}`}
                     >
-                      {isActive && <span className="w-2.5 h-2.5 rounded-full bg-[#C9A84C]" />}
+                      {isActive && <span className="w-2.5 h-2.5 bg-[#C9A84C]" />}
                     </span>
                   </button>
                 );
@@ -207,7 +207,7 @@ export default function CatalogFilters({ activeCategory, onCategoryChange, avail
               <div className="p-4">
                 <button
                   onClick={() => setOpen(false)}
-                  className="w-full py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-[var(--color-secondary)] border border-[var(--color-secondary)]/30 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                  className="w-full py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-[var(--color-secondary)] border border-[var(--color-secondary)]/30 hover:bg-gray-50 active:bg-gray-100 transition-colors"
                 >
                   Cancel
                 </button>

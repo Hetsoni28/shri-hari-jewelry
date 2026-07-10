@@ -134,14 +134,14 @@ export default function CatalogHeader({ products, activeGender, activeMetal, onG
               onClick={() => onMetalChange(tab.value)}
               whileHover={{ y: -1, transition: { duration: 0.15 } }}
               whileTap={{ scale: 0.97 }}
-              className={`relative flex items-center gap-1.5 px-3 sm:px-4 py-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.15em] border transition-all duration-300 rounded-sm ${
+              className={`relative flex items-center gap-1.5 px-3 sm:px-4 py-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.15em] border transition-all duration-300 ${
                 isActive
                   ? tab.activeStyle
                   : 'border-[var(--color-secondary)]/15 text-[var(--color-secondary)]/60 hover:border-[var(--color-secondary)]/30 hover:text-[var(--color-secondary)]'
               }`}
             >
               {/* Metallic dot indicator */}
-              <span className={`w-2 h-2 rounded-full shrink-0 ${tab.dotStyle}`} />
+              <span className={`w-2 h-2 shrink-0 ${tab.dotStyle}`} />
               {tab.label}
               <AnimatePresence mode="popLayout">
                 <motion.span

@@ -170,7 +170,7 @@ export default function CatalogGrid({ products }: { products: Product[] }) {
                       {product.category}
                     </p>
                     {product.subcategory && (
-                      <span className="shrink-0 text-[7px] sm:text-[8px] uppercase tracking-[0.1em] font-bold px-1.5 py-0.5 rounded-sm bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
+                      <span className="shrink-0 text-[7px] sm:text-[8px] uppercase tracking-[0.1em] font-bold px-1.5 py-0.5 bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/15">
                         {product.subcategory}
                       </span>
                     )}
@@ -183,12 +183,12 @@ export default function CatalogGrid({ products }: { products: Product[] }) {
 
                   {/* Row 3: metal badge — always flush to bottom */}
                   {product.metalType && (
-                    <span className={`mt-2 inline-flex items-center gap-1 w-fit text-[8px] uppercase tracking-[0.1em] font-bold px-2 py-0.5 rounded-sm border ${
+                    <span className={`mt-2 inline-flex items-center gap-1 w-fit text-[8px] uppercase tracking-[0.1em] font-bold px-2 py-0.5 border ${
                       product.metalType === 'Gold'
                         ? 'bg-gradient-to-r from-[#FDF6E3] to-[#FBF0C0] text-[#8B6914] border-[#C9A84C]/30'
                         : 'bg-gradient-to-r from-[#F5F5F5] to-[#E8E8E8] text-[#5a5a5a] border-[#9E9E9E]/30'
                     }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${
+                      <span className={`w-1.5 h-1.5 ${
                         product.metalType === 'Gold'
                           ? 'bg-gradient-to-br from-[#F0D060] to-[#C9A84C]'
                           : 'bg-gradient-to-br from-[#D0D0D0] to-[#9E9E9E]'
