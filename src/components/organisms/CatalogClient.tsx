@@ -54,7 +54,7 @@ export default function CatalogClient({ products }: { products: Product[] }) {
   // Combined filter: subcategory + metalType + category (all AND logic)
   // Unisex cross-lists under Women & Men tabs
   const filtered = useMemo(() => {
-    return products.filter((p) => {
+    const base = products.filter((p) => {
       const sub = p.subcategory;
       const genderMatch =
         activeGender === null ||
@@ -70,7 +70,36 @@ export default function CatalogClient({ products }: { products: Product[] }) {
 
       return genderMatch && metalMatch && categoryMatch;
     });
+
+    // When viewing ALL, interleave products by category so users see
+    // variety instead of all chains / all rings grouped together.
+    if (activeCategory === 'all') {
+      const buckets: Record<string, Product[]> = {};
+      for (const p of base) {
+        const key = (p.category ?? 'other').toLowerCase();
+        if (!buckets[key]) buckets[key] = [];
+        buckets[key].push(p);
+      }
+      const keys = Object.keys(buckets);
+      const interleaved: Product[] = [];
+      let hasMore = true;
+      let i = 0;
+      while (hasMore) {
+        hasMore = false;
+        for (const key of keys) {
+          if (buckets[key][i]) {
+            interleaved.push(buckets[key][i]);
+            hasMore = true;
+          }
+        }
+        i++;
+      }
+      return interleaved;
+    }
+
+    return base;
   }, [products, activeGender, activeMetal, activeCategory]);
+
 
   // Available categories for the current gender+metal combo
   const availableCategories = useMemo(() => {
