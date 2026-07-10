@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
     // Next.js image proxy. Setting unoptimized=true in dev serves images
     // directly from Sanity CDN (already globally optimized). Production on
     // Vercel uses full Next.js optimization pipeline — no trade-off.
-    unoptimized: isDev,
+    unoptimized: true,
 
     // All quality levels used across the codebase
     qualities: [75, 85, 90, 95],

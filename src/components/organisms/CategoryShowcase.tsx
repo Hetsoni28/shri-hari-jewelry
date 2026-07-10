@@ -8,22 +8,22 @@ import { staggerContainer, fadeUpVariant, imageHoverVariant, cardHoverVariant, l
 const categories = [
   {
     title: 'Necklaces',
-    image: 'https://images.unsplash.com/photo-1599643478524-fb66f70d00f8?auto=format&fit=crop&q=80&w=600',
+    image: '/images/vedic_choker_main_1780907169188.png',
     link: '/catalog?category=Necklaces',
   },
   {
     title: 'Rings',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b2548e?auto=format&fit=crop&q=80&w=600',
+    image: '/images/rings_collection_1780906243842.png',
     link: '/catalog?category=Rings',
   },
   {
     title: 'Earrings',
-    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600',
+    image: '/images/nawabi_choker_1780906817916.png',
     link: '/catalog?category=Earrings',
   },
   {
     title: 'Bangles',
-    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600',
+    image: '/images/gold_bangle_1780906267820.png',
     link: '/catalog?category=Bangles',
   },
 ];
