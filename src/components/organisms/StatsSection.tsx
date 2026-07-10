@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 import { staggerContainer, fadeUpVariant, luxuryEasing } from '@/lib/animations';
 
 const stats = [
-  { number: '23+', label: 'Years of Excellence', delay: 0 },
-  { number: '1k+', label: 'Happy Clients',        delay: 0.1 },
-  { number: '150+', label: 'Exquisite Designs',   delay: 0.2 },
+  { number: '25+', label: 'Years of Excellence', delay: 0 },
+  { number: '500+', label: 'Happy Clients',        delay: 0.1 },
+  { number: '103+', label: 'Exquisite Designs',   delay: 0.2 },
 ];
 
 export default function StatsSection() {
