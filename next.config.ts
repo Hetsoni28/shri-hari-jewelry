@@ -2,7 +2,32 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
 
+// ─── Security headers applied to every response ───────────────────────────────
+const securityHeaders = [
+  // Prevent clickjacking — stops your site being embedded in iframes
+  { key: 'X-Frame-Options',           value: 'SAMEORIGIN' },
+  // Prevent MIME-type sniffing attacks
+  { key: 'X-Content-Type-Options',    value: 'nosniff' },
+  // Control referrer information for privacy
+  { key: 'Referrer-Policy',           value: 'strict-origin-when-cross-origin' },
+  // Disable browser features that aren't needed (camera, mic, etc.)
+  { key: 'Permissions-Policy',        value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+  // Force HTTPS for 1 year (only active on production)
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+  // Basic XSS protection for older browsers
+  { key: 'X-XSS-Protection',         value: '1; mode=block' },
+];
+
 const nextConfig: NextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/(.*)',   // Apply to every page and API route
+        headers: securityHeaders,
+      },
+    ];
+  },
+
   // ─── Dev origins (tunnel / local network support) ──────────────────────────
   allowedDevOrigins: [
     "localhost:3000",
