@@ -3,13 +3,14 @@
 import { motion } from 'framer-motion';
 import { staggerContainer, fadeUpVariant, luxuryEasing } from '@/lib/animations';
 
-const stats = [
-  { number: '25+', label: 'Years of Excellence', delay: 0 },
-  { number: '500+', label: 'Happy Clients',        delay: 0.1 },
-  { number: '103+', label: 'Exquisite Designs',   delay: 0.2 },
+const stats = (productCount: number) => [
+  { number: '25+',            label: 'Years of Excellence', delay: 0   },
+  { number: '500+',           label: 'Happy Clients',        delay: 0.1 },
+  { number: `${productCount}+`, label: 'Exquisite Designs',  delay: 0.2 },
 ];
 
-export default function StatsSection() {
+export default function StatsSection({ productCount = 100 }: { productCount?: number }) {
+  const statItems = stats(productCount);
   return (
     <section className="bg-white py-12 sm:py-16 my-6 sm:my-8 border-y border-[var(--color-secondary)]/20 overflow-hidden">
       <div className="container mx-auto px-4 max-w-5xl text-center">
@@ -58,7 +59,7 @@ export default function StatsSection() {
           viewport={{ once: true, margin: '-40px' }}
           className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-tertiary/20"
         >
-          {stats.map((stat, i) => (
+          {statItems.map((stat, i) => (
             <motion.div
               key={stat.label}
               custom={i}

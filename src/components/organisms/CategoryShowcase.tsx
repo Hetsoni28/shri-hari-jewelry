@@ -4,31 +4,24 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { staggerContainer, fadeUpVariant, imageHoverVariant, cardHoverVariant, luxuryEasing, durations } from '@/lib/animations';
+import { urlForImage } from '@/sanity/image';
 
-const categories = [
-  {
-    title: 'Necklaces',
-    image: '/images/vedic_choker_main_1780907169188.png',
-    link: '/catalog?category=Necklaces',
-  },
-  {
-    title: 'Rings',
-    image: '/images/rings_collection_1780906243842.png',
-    link: '/catalog?category=Rings',
-  },
-  {
-    title: 'Earrings',
-    image: '/images/nawabi_choker_1780906817916.png',
-    link: '/catalog?category=Earrings',
-  },
-  {
-    title: 'Bangles',
-    image: '/images/gold_bangle_1780906267820.png',
-    link: '/catalog?category=Bangles',
-  },
-];
+export default function CategoryShowcase({ products }: { products: any[] }) {
+  const neck = products.find(p => p.category === 'Necklaces' || p.category === 'Choker') || products[0];
+  const rings = products.find(p => p.category === 'Rings') || products[1];
+  const earrings = products.find(p => p.category === 'Earrings' || p.category === 'Bali') || products[2];
+  const pendants = products.find(p => p.category === 'Pendants' || p.category === 'Pendant') || products[3];
 
-export default function CategoryShowcase() {
+  const getImg = (p: any) => p?.images?.[0] ? urlForImage(p.images[0])?.width(800).quality(90).url() || '' : '/images/placeholder.png';
+  const getLink = (p: any, fallbackCat: string) => p?.slug ? `/catalog/${encodeURIComponent(p.slug)}` : `/catalog?category=${fallbackCat}`;
+
+  const categories = [
+    { title: 'Necklaces', image: getImg(neck),     link: getLink(neck, 'Necklaces') },
+    { title: 'Rings',     image: getImg(rings),    link: getLink(rings, 'Rings') },
+    { title: 'Earrings',  image: getImg(earrings), link: getLink(earrings, 'Earrings') },
+    { title: 'Pendants',  image: getImg(pendants), link: getLink(pendants, 'Pendants') },
+  ];
+
   return (
     <section className="py-12 sm:py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 md:px-8">

@@ -2,7 +2,9 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function ContactMapAndCraftsmanship() {
+export default function ContactMapAndCraftsmanship({ images }: { images?: string[] }) {
+  const getImg = (idx: number) => images?.[idx] || '/images/placeholder.png';
+
   return (
     <section>
       {/* Craftsmanship Section */}
@@ -28,18 +30,18 @@ export default function ContactMapAndCraftsmanship() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div className="relative aspect-[3/4] w-full overflow-hidden group">
-                    <Image src="/images/vedic_choker_thumb1_1780907181761.png" alt="Craftsmanship 1" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
+                    <Image src={getImg(0)} alt="Craftsmanship 1" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
                   </div>
                   <div className="relative aspect-square w-full overflow-hidden group">
-                    <Image src="/images/rings_collection_1780906243842.png" alt="Craftsmanship 2" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
+                    <Image src={getImg(1)} alt="Craftsmanship 2" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
                   </div>
                 </div>
                 <div className="space-y-4 pt-8">
                   <div className="relative aspect-square w-full overflow-hidden group">
-                    <Image src="/images/gold_bangle_1780906267820.png" alt="Craftsmanship 3" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
+                    <Image src={getImg(2)} alt="Craftsmanship 3" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
                   </div>
                   <div className="relative aspect-[3/4] w-full overflow-hidden group">
-                    <Image src="/images/mens_chain_1780906231254.png" alt="Craftsmanship 4" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
+                    <Image src={getImg(3)} alt="Craftsmanship 4" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 50vw, 25vw" />
                   </div>
                 </div>
               </div>

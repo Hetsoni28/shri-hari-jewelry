@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { luxuryEasing } from '@/lib/animations';
 
-export default function ContactHeader() {
+export default function ContactHeader({ image }: { image?: string }) {
   const reduceMotion = !!useReducedMotion();
   const sectionRef   = useRef<HTMLElement>(null);
 
@@ -27,7 +27,7 @@ export default function ContactHeader() {
       <motion.div
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url("/images/bridal_collection_1780906256760.png")',
+          backgroundImage: `url("${image || '/images/placeholder.png'}")`,
           scale: 1.1,
           y: reduceMotion ? 0 : bgY,
         }}
@@ -89,21 +89,6 @@ export default function ContactHeader() {
           Whether you are looking for a bespoke Indian masterpiece or the perfect
           gift for a loved one, our artisans are here to assist you.
         </motion.p>
-
-        {/* Scroll cue */}
-        <motion.div
-          className="flex flex-col items-center gap-1.5 mt-10 sm:mt-14"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1.4 }}
-        >
-          <span className="text-white/35 text-[9px] uppercase tracking-[0.3em] font-label">Scroll</span>
-          <motion.div
-            className="w-px h-8 bg-gradient-to-b from-[#C9A84C]/60 to-transparent"
-            animate={{ scaleY: [1, 0.4, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        </motion.div>
       </motion.div>
     </section>
   );
