@@ -21,7 +21,7 @@ export default function ContactHeader({ image }: { image?: string }) {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-screen min-h-[400px] sm:min-h-[600px] max-h-[1000px] flex items-center justify-center overflow-hidden"
+      className="relative w-full h-[60vh] md:h-[80vh] lg:h-screen min-h-[400px] sm:min-h-[500px] max-h-[900px] flex items-center justify-center overflow-hidden"
     >
       {/* Background Image with Parallax */}
       <motion.div
@@ -36,10 +36,10 @@ export default function ContactHeader({ image }: { image?: string }) {
       {/* Grain texture overlay — premium tactile feel */}
       <div className="absolute inset-0 luxury-grain opacity-[0.04] mix-blend-overlay z-[1] pointer-events-none" />
 
-      {/* Cinematic Overlays */}
-      <div className="absolute inset-0 bg-black/55 z-[2]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary)]/35 via-transparent to-black/55 mix-blend-multiply z-[2]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20 z-[2]" />
+      {/* Cinematic Overlays - Lightened so product is visible */}
+      <div className="absolute inset-0 bg-black/20 z-[2]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-primary)]/40 via-transparent to-black/30 mix-blend-multiply z-[2]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent z-[2]" />
 
       {/* Gold hairline at top */}
       <motion.div
@@ -55,14 +55,14 @@ export default function ContactHeader({ image }: { image?: string }) {
         style={{ y: reduceMotion ? 0 : contentY, opacity: reduceMotion ? 1 : contentOpacity }}
       >
         {/* Headline — word reveal */}
-        <div className="mb-6 sm:mb-8 overflow-hidden">
+        <div className="mb-6 sm:mb-8">
           {[['Connect'], ['with'], ['Heritage']].map((words, li) => (
-            <div key={li} className="overflow-hidden">
+            <div key={li} className="overflow-hidden px-2 -mx-2 pb-4 -mb-4">
               {words.map((word, wi) => (
                 <motion.span
                   key={`${li}-${wi}`}
                   className={`inline-block text-2xl sm:text-5xl md:text-7xl font-headline font-bold leading-[1.1] tracking-tight drop-shadow-2xl ${
-                    li === 2 ? 'italic font-serif font-normal text-[var(--color-tertiary)]' : 'text-white'
+                    li === 2 ? 'italic font-serif font-normal text-[var(--color-tertiary)] px-2 [text-shadow:0_2px_10px_rgba(0,0,0,0.8)]' : 'text-white'
                   }`}
                   initial={{ y: '110%', opacity: 0 }}
                   animate={{ y: '0%', opacity: 1 }}

@@ -36,19 +36,23 @@ export default async function ContactPage() {
   const gridRaw = gridItems.map(item => item?.images?.[0]).filter(Boolean);
 
   const heroUrl = heroImg
-    ? urlForImage(heroImg)?.width(1920).height(1080).quality(95).format('jpg').url() || ''
+    ? urlForImage(heroImg)?.width(1920).quality(95).format('jpg').url() || ''
     : '/images/placeholder.png';
 
   // Build 4 grid images from the diverse query results
-  const gridUrls = Object.values(gridRaw as Record<string, any>)
-    .filter(Boolean)
-    .map((img: any) => urlForImage(img)?.width(800).quality(90).url() || '/images/placeholder.png');
+  const gridData = gridItems.map((item) => {
+    if (!item) return null;
+    const img = item.images?.[0];
+    const url = img ? urlForImage(img)?.width(800).quality(90).url() || '/images/placeholder.png' : '/images/placeholder.png';
+    const link = item.slug ? `/catalog/${encodeURIComponent(item.slug)}` : `/catalog?category=${item.category || 'All'}`;
+    return { url, link };
+  }).filter(Boolean) as { url: string; link: string }[];
 
   return (
     <div className="bg-[var(--color-background-light)] min-h-screen">
       <ContactHeader image={heroUrl} />
       <ContactInfoAndForm />
-      <ContactMapAndCraftsmanship images={gridUrls} />
+      <ContactMapAndCraftsmanship items={gridData} />
     </div>
   );
 }
