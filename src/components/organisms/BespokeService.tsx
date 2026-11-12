@@ -62,7 +62,7 @@ export default function BespokeService() {
 
       <motion.a
         variants={fadeUpVariant}
-        href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(
+        href={`https://wa.me/${shopInfo.phone2.replace(/\D/g, '')}?text=${encodeURIComponent(
 `Namaste! 🙏
 
 I'm interested in getting a *custom jewelry piece* made at Shri Hari Jewellers.

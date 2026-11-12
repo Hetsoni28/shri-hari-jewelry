@@ -10,7 +10,7 @@ export default function WhatsAppFloatingCTA() {
 
   return (
     <motion.a
-      href={`https://wa.me/${shopInfo.phone2.replace(/\s+/g, '')}?text=${encodeURIComponent(
+      href={`https://wa.me/${shopInfo.phone2.replace(/\D/g, '')}?text=${encodeURIComponent(
 `Namaste! 🙏
 
 I'm browsing *shriharijewellers.com* and would love some help finding the right jewelry.

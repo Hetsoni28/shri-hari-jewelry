@@ -54,12 +54,12 @@ export default function ContactInfoAndForm() {
                     info@shriharijewellers.com
                   </a>
 
-                  <a href={`https://wa.me/919978101081?text=${encodeURIComponent(
+                  <a href={`https://wa.me/${shopInfo.phone2.replace(/\D/g, '')}?text=${encodeURIComponent(
 `🌟 *General Inquiry – Shri Hari Jewellers*
 
 Namaste! 🙏
 
-I am visiting your website *shriharijewellers.com* and have an inquiry.
+I am visiting your website and have an inquiry.
 
 I am looking for:
 • 💍 Type: (e.g. Ring / Necklace / Earrings / Bracelet)

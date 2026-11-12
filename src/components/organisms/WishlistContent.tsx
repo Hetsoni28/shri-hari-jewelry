@@ -1,5 +1,6 @@
 "use client";
 
+import { shopInfo } from '@/data/shopInfo';
 import React from 'react';
 import WishlistCard from '@/components/molecules/WishlistCard';
 import { useWishlist } from '@/context/WishlistContext';
@@ -31,7 +32,7 @@ export default function WishlistContent() {
           badge2={item.badge2}
           isNewArrival={item.isNewArrival}
           onRemove={() => removeFromWishlist(item.id)}
-          onInquire={() => window.open(`https://wa.me/919978101081?text=${encodeURIComponent(
+          onInquire={() => window.open(`https://wa.me/${shopInfo.phone2.replace(/\D/g, '')}?text=${encodeURIComponent(
 `Namaste! 🙏
 
 I saved this piece from your website to my wishlist and would love to know more about it:
