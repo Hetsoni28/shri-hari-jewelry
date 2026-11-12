@@ -3,11 +3,17 @@ import CatalogDownloadContent from '@/components/organisms/CatalogDownloadConten
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';
 import { urlForImage } from '@/sanity/image';
+import { pageMeta } from '@/lib/seo';
 
 // export const revalidate = 60; // Removed to ensure PDFs are always perfectly up to date
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Download PDF Catalogue' };
+export const metadata = pageMeta({
+  title: 'Download the PDF Jewellery Catalogue',
+  description:
+    'Download the Shri Hari Jewellers catalogue as a PDF by category — gold and silver rings, mala, sets, earrings and more. Share it easily on WhatsApp.',
+  path: '/catalog-download',
+});
 
 export default async function CatalogDownloadPage() {
   const sanityProducts = await client.fetch(productsQuery) || [];

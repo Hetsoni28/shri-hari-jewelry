@@ -33,7 +33,22 @@ export default defineType({
       name: 'images',
       title: 'Images',
       type: 'array',
-      of: [{type: 'image', options: {hotspot: true}}],
+      of: [
+        {
+          type: 'image',
+          options: {hotspot: true},
+          fields: [
+            defineField({
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              description:
+                'Describe the photo for Google and screen readers, e.g. "22KT gold Cuban link chain on cream silk". Leave empty to use the product name.',
+              validation: (Rule) => Rule.max(125).warning('Keep alt text under 125 characters'),
+            }),
+          ],
+        },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -102,5 +117,35 @@ export default defineType({
         ],
       },
     }),
+
+    // ── SEO (all optional — sensible defaults are generated when empty) ──
+    defineField({
+      name: 'seoTitle',
+      title: 'SEO title',
+      type: 'string',
+      group: 'seo',
+      description: 'Title shown in Google. Leave empty to use the product name. Best under 60 characters.',
+      validation: (Rule) => Rule.max(60).warning('Google usually cuts titles after ~60 characters'),
+    }),
+    defineField({
+      name: 'seoDescription',
+      title: 'Meta description',
+      type: 'text',
+      rows: 3,
+      group: 'seo',
+      description: 'The summary under the title in Google. Leave empty to use the start of the description.',
+      validation: (Rule) => Rule.max(160).error('Keep the meta description to 160 characters or fewer'),
+    }),
+    defineField({
+      name: 'noIndex',
+      title: 'Hide from search engines',
+      type: 'boolean',
+      group: 'seo',
+      initialValue: false,
+      description: 'Turn on to keep this product out of Google and the sitemap (it stays visible on the site).',
+    }),
+  ],
+  groups: [
+    {name: 'seo', title: 'SEO'},
   ],
 })

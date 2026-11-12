@@ -1,37 +1,55 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { shopInfo } from "@/data/shopInfo";
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 import LuxuryLoader from "@/components/loading/LuxuryLoader";
 
+const DEFAULT_TITLE = `${SITE_NAME} | Gold & Silver Jewellery in Mogar, Anand`;
+const DEFAULT_DESCRIPTION =
+  'Handcrafted gold and silver jewellery by Shri Hari Jewellers (Padrawala), Mogar, Anand. BIS hallmarked gold rings, mala, sets and made-to-order pieces.';
+
+// Site-wide defaults — every page overrides title, description and canonical (see lib/seo.ts)
 export const metadata: Metadata = {
-  metadataBase: new URL('https://shri-hari-jewellers-eta.vercel.app'),
-  title: {
-    default: `${shopInfo.name} | ${shopInfo.services[0]}`,
-    template: `%s | ${shopInfo.name}`,
-  },
-  description: `${shopInfo.name} ${shopInfo.subtitle} - ${shopInfo.services.join(', ')}. Located at ${shopInfo.address.city}.`,
+  metadataBase: new URL(SITE_URL),
+  title: { default: DEFAULT_TITLE, template: `%s | ${SITE_NAME}` },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    'jewellers in Mogar', 'jewellery shop Anand', 'gold jewellery Anand', 'BIS hallmarked gold',
+    'gold mangalsutra', 'gold mala', 'silver jewellery', 'custom jewellery Gujarat', 'Shri Hari Jewellers Padrawala',
+  ],
+  authors: [{ name: shopInfo.owner }],
+  creator: SITE_NAME,
+  category: 'shopping',
+  // (no site-wide canonical: each page sets its own, so error pages don't claim the home URL)
   openGraph: {
-    title: `${shopInfo.name} | ${shopInfo.services[0]}`,
-    description: `${shopInfo.name} ${shopInfo.subtitle} - ${shopInfo.services.join(', ')}. Located at ${shopInfo.address.city}.`,
-    url: 'https://shri-hari-jewellers-eta.vercel.app',
-    siteName: shopInfo.name,
-    images: [
-      {
-        url: 'https://shri-hari-jewellers-eta.vercel.app/opengraph-image',
-        width: 1200,
-        height: 630,
-        alt: `${shopInfo.name} - Gold & Silver Jewellers`,
-      },
-    ],
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    url: '/',
+    siteName: SITE_NAME,
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: `${SITE_NAME} – gold and silver jewellery, Mogar` }],
     locale: 'en_IN',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: `${shopInfo.name} | ${shopInfo.services[0]}`,
-    description: `${shopInfo.name} ${shopInfo.subtitle} - ${shopInfo.services.join(', ')}. Located at ${shopInfo.address.city}.`,
-    images: ['https://shri-hari-jewellers-eta.vercel.app/opengraph-image'],
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+  },
+  // Google Search Console: set GOOGLE_SITE_VERIFICATION on Vercel to the code Google gives you
+  ...(process.env.GOOGLE_SITE_VERIFICATION && {
+    verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
+  }),
+};
+
+export const viewport: Viewport = {
+  themeColor: '#FFFFFF',
 };
 
 export default function RootLayout({
@@ -41,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
       className="h-full antialiased"
       data-scroll-behavior="smooth"
       // the inline script below may add data-welcome before React hydrates

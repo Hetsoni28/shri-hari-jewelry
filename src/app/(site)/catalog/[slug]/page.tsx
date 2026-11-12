@@ -11,6 +11,7 @@ import { frame } from '@/lib/framing';
 import { categoryKey, categoryLabel } from '@/lib/catalog';
 import { toCatalogItem, type CatalogProduct } from '@/lib/catalogItems';
 import { shopInfo } from '@/data/shopInfo';
+import { SITE_NAME, SITE_URL, clip, jsonLd, pageMeta, productAlt } from '@/lib/seo';
 
 // export const revalidate = 60; // Removed to prevent aggressive caching
 export const dynamic = 'force-dynamic';
@@ -26,22 +27,49 @@ type Product = {
   subcategory?: string;
   isNewArrival?: boolean;
   metalType?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  noIndex?: boolean;
+  _updatedAt?: string;
 };
 
 const getProduct = async (slug: string): Promise<Product | null> =>
   client.fetch(productBySlugQuery, { slug: decodeURIComponent(slug) });
 
+const altOf = (img: SanityImage) => (img as { alt?: string })?.alt;
+
+// Search title / description: the SEO fields from Sanity when set, otherwise generated
+// Generated titles stay within ~60 characters including " | Shri Hari Jewellers";
+// the "– Gold Mala" part is dropped when it would push the title past that
+const seoTitleOf = (p: Product, label: string) => {
+  if (p.seoTitle?.trim()) return p.seoTitle.trim();
+  const full = `${p.name} – ${[p.metalType, label].filter(Boolean).join(' ')}`;
+  return `${full} | ${SITE_NAME}`.length <= 60 ? full : p.name;
+};
+const seoDescriptionOf = (p: Product, label: string) =>
+  p.seoDescription?.trim() ||
+  p.description?.trim() ||
+  `${p.name}: ${(p.metalType || 'gold').toLowerCase()} ${label.toLowerCase()} handcrafted by ${shopInfo.name}, ${shopInfo.address.city}, ${shopInfo.address.taluka_district}. Ask for today's price on WhatsApp.`;
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const product = await getProduct((await params).slug);
-  if (!product) return { title: 'Product not found' };
-  const description = product.description?.slice(0, 160)
-    || `${product.name} — ${product.metalType || 'Gold'} ${product.category || 'jewellery'} by Shri Hari Jewellers, Mogar.`;
-  const image = product.images?.[0] ? urlForImage(product.images[0])?.width(1200).height(630).fit('crop').url() : undefined;
-  return {
-    title: product.name,
-    description,
-    openGraph: { title: product.name, description, ...(image && { images: [{ url: image, width: 1200, height: 630 }] }) },
-  };
+  if (!product) return { title: 'Product not found', robots: { index: false } };
+  const label = categoryLabel(categoryKey(product.category), product.category);
+  const img = product.images?.[0];
+  return pageMeta({
+    title: seoTitleOf(product, label),
+    description: seoDescriptionOf(product, label),
+    path: `/catalog/${encodeURIComponent(product.slug)}`,
+    noIndex: product.noIndex,
+    image: img
+      ? {
+          url: urlForImage(img)?.width(1200).height(630).fit('crop').auto('format').url() || '',
+          width: 1200,
+          height: 630,
+          alt: productAlt({ name: product.name, category: product.category, metal: product.metalType, alt: altOf(img) }),
+        }
+      : undefined,
+  });
 }
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -55,11 +83,12 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
 
   const key = categoryKey(product.category);
   const label = categoryLabel(key, product.category);
-  const url = `${shopInfo.siteUrl}/catalog/${encodeURIComponent(product.slug)}`;
+  const url = `${SITE_URL}/catalog/${encodeURIComponent(product.slug)}`;
 
   const images: GalleryImage[] = (product.images ?? []).map((img) => ({
     ...frame(img, 1100),
     full: urlForImage(img)?.width(2000).fit('max').quality(90).auto('format').url() || '',
+    alt: productAlt({ name: product.name, category: product.category, metal: product.metalType, alt: altOf(img) }),
   }));
 
   // ── More from the same category — same gender first, then newest
@@ -69,22 +98,35 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
     .slice(0, 4)
     .map((p) => toCatalogItem(p, all.indexOf(p)));
 
-  // Structured data so search engines can show the piece properly (no price: it's set on the day)
-  const jsonLd = {
+  // Structured data so search engines can show the piece and its place in the site
+  // (no price or offer: gold is priced on the day)
+  const productLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    description: product.description,
+    description: clip(seoDescriptionOf(product, label), 500),
     image: images.map((i) => i.full),
     category: label,
     material: product.metalType,
     url,
+    sku: product._id,
     brand: { '@type': 'Brand', name: shopInfo.name },
+  };
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Catalogue', item: `${SITE_URL}/catalog` },
+      { '@type': 'ListItem', position: 3, name: label, item: `${SITE_URL}/catalog?category=${encodeURIComponent(key)}` },
+      { '@type': 'ListItem', position: 4, name: product.name, item: url },
+    ],
   };
 
   return (
     <div className="bg-[#FDFCFA]">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(productLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(breadcrumbLd)} />
 
       <div className="mx-auto max-w-7xl px-5 pb-20 pt-6 sm:px-8 sm:pt-10 lg:px-12 lg:pb-24">
         {/* Photo + details as one centred pair: the photo column is exactly as wide as the

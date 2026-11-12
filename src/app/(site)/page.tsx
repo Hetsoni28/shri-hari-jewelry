@@ -9,6 +9,8 @@ import { urlForImage } from '@/sanity/image';
 import { client } from '@/sanity/client';
 import { catalogProductsQuery } from '@/sanity/queries';
 import { bestFit, fitOf, frame } from '@/lib/framing';
+import { jsonLd, pageMeta, productAlt } from '@/lib/seo';
+import { jewelryStoreLd, websiteLd } from '@/lib/storeLd';
 
 // Up to 6 recent pieces per category; the hero picks the one whose photo best fits its arch
 const heroImagesQuery = groq`{
@@ -52,6 +54,13 @@ type RawHero = { name: string; category: string; slug: { current: string }; imag
 
 export const revalidate = 60;
 
+export const metadata = pageMeta({
+  title: 'Gold & Silver Jewellery in Mogar, Anand',
+  description:
+    'Handcrafted gold and silver jewellery by Shri Hari Jewellers (Padrawala), Mogar, Anand. BIS hallmarked gold rings, mala, sets and made-to-order pieces.',
+  path: '/',
+});
+
 export default async function Home() {
   const [products, heroRaw]: [Product[], Record<string, RawHero[] | null>] = await Promise.all([
     client.fetch(catalogProductsQuery), // newest first
@@ -63,7 +72,13 @@ export default async function Home() {
   const heroImages = Object.values(heroRaw)
     .map((list) => bestFit(list ?? [], (p) => p.image))
     .filter((p): p is RawHero => !!p && fitOf(p.image) === 'cover')
-    .map((p) => ({ ...frame(p.image, 960), name: p.name, category: p.category, slug: p.slug?.current }))
+    .map((p) => ({
+      ...frame(p.image, 960),
+      name: p.name,
+      category: p.category,
+      slug: p.slug?.current,
+      alt: productAlt({ name: p.name, category: p.category, alt: (p.image as { alt?: string })?.alt }),
+    }))
     .filter((p) => p.src !== '');
 
   // ── Zero-repeat allocator: each product appears in only one section,
@@ -98,6 +113,7 @@ export default async function Home() {
       category: p.category ?? '',
       metal: p.metalType ?? 'Gold',
       ...frame(p.images![0], 640),
+      alt: productAlt({ name: p.name, category: p.category, metal: p.metalType, alt: (p.images![0] as { alt?: string })?.alt }),
       isNew: !!p.isNewArrival,
     }));
 
@@ -106,13 +122,15 @@ export default async function Home() {
 
   return (
     <div className="flex w-full flex-col bg-[#FDFCFA]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(jewelryStoreLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(websiteLd)} />
       <HeroSection heroImages={heroImages} productCount={products.length} />
       <HomeCategories categories={categories} total={products.length} />
       <HomeNewIn items={newIn} />
       <HomeRates goldCount={goldCount} silverCount={silverCount} />
       <HomeCustomOrder
         image={customOrder?.images?.[0] ? frame(customOrder.images[0], 920) : undefined}
-        imageAlt={customOrder?.name}
+        imageAlt={customOrder ? productAlt({ name: customOrder.name, category: customOrder.category, metal: customOrder.metalType }) : undefined}
       />
       <HomeVisit />
     </div>

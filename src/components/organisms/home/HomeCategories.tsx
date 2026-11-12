@@ -31,7 +31,7 @@ export default function HomeCategories({ categories, total }: { categories: Cate
                       src={c.src}
                       fit={c.fit}
                       ratio={c.ratio}
-                      alt={`${c.label} — Shri Hari Jewellers`}
+                      alt={`${c.label} – gold and silver ${c.label.toLowerCase()} at Shri Hari Jewellers, Mogar`}
                       sizes="(min-width: 768px) 25vw, 50vw"
                       imgClassName="transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                     />

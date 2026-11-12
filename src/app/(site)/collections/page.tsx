@@ -3,6 +3,7 @@ import CuratedCollections from '@/components/organisms/CuratedCollections';
 import dynamic from 'next/dynamic';
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';
+import { pageMeta } from '@/lib/seo';
 
 // Lazy-load heavy below-fold sections to reduce initial lag
 const GoldHeritage   = dynamic(() => import('@/components/organisms/GoldHeritage'));
@@ -11,7 +12,12 @@ const BespokeService = dynamic(() => import('@/components/organisms/BespokeServi
 
 export const revalidate = 60;
 
-export const metadata = { title: 'Collections' };
+export const metadata = pageMeta({
+  title: 'Gold & Silver Jewellery Collections',
+  description:
+    'Explore curated gold and silver jewellery collections from Shri Hari Jewellers, Mogar: bridal sets, heritage gold, modern silver and made-to-order pieces.',
+  path: '/collections',
+});
 
 export default async function CollectionsPage() {
   const products = await client.fetch(productsQuery);

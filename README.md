@@ -5,7 +5,7 @@
   <p>An enterprise-grade luxury e-commerce platform for fine jewelry, built with modern web technologies to deliver a premium shopping experience.</p>
 
   <div>
-    <a href="https://shri-hari-jewellers-eta.vercel.app" target="_blank"><img src="https://img.shields.io/badge/Live_Preview-View_Site-goldenrod?style=for-the-badge&logo=vercel" alt="Live Preview" /></a>
+    <a href="https://shri-hari-kappa.vercel.app" target="_blank"><img src="https://img.shields.io/badge/Live_Preview-View_Site-goldenrod?style=for-the-badge&logo=vercel" alt="Live Preview" /></a>
   </div>
 </div>
 

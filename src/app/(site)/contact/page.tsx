@@ -4,10 +4,17 @@ import ContactMapAndCraftsmanship from '@/components/organisms/ContactMapAndCraf
 import { client } from '@/sanity/client';
 import { urlForImage } from '@/sanity/image';
 import { productsQuery } from '@/sanity/queries';
+import { jsonLd, pageMeta } from '@/lib/seo';
+import { jewelryStoreLd } from '@/lib/storeLd';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Contact & Visit Us' };
+export const metadata = pageMeta({
+  title: 'Visit Our Jewellery Shop in Mogar, Anand',
+  description:
+    'Visit Shri Hari Jewellers near Mahadev Temple, Mogar, Anand, Gujarat. Call +91 99781 01081 or WhatsApp us for gold rates, designs and custom orders.',
+  path: '/contact',
+});
 
 export default async function ContactPage() {
   const products = await client.fetch(productsQuery);
@@ -50,6 +57,7 @@ export default async function ContactPage() {
 
   return (
     <div className="bg-[var(--color-background-light)] min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(jewelryStoreLd)} />
       <ContactHeader image={heroUrl} />
       <ContactInfoAndForm />
       <ContactMapAndCraftsmanship items={gridData} />

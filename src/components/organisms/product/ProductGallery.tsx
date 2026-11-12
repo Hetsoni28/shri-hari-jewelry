@@ -12,6 +12,8 @@ export type GalleryImage = {
   ratio: number;
   /** the whole photo at high resolution, for the magnifier and full-screen view */
   full: string;
+  /** descriptive alt text (from Sanity, or generated from the product) */
+  alt?: string;
 };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -80,7 +82,7 @@ export default function ProductGallery({ images, name, isNew }: { images: Galler
           aria-label={`View ${name} full screen`}
           className="group relative block aspect-[4/5] w-full cursor-zoom-in overflow-hidden bg-[#F6F2EA]"
         >
-          <FramedImage src={image.src} fit={image.fit} ratio={image.ratio} alt={name} priority sizes="(min-width: 1024px) 50vw, 100vw" />
+          <FramedImage src={image.src} fit={image.fit} ratio={image.ratio} alt={image.alt || name} priority sizes="(min-width: 1024px) 50vw, 100vw" />
 
           {/* Magnifier — the whole photo at 2.4×, positioned under the cursor */}
           {lens && (
@@ -161,7 +163,7 @@ export default function ProductGallery({ images, name, isNew }: { images: Galler
             </div>
 
             <div className="relative flex-1" onClick={() => setViewerOpen(false)}>
-              <Image src={image.full} alt={name} fill unoptimized sizes="100vw" className="object-contain p-4 sm:p-10" />
+              <Image src={image.full} alt={image.alt || name} fill unoptimized sizes="100vw" className="object-contain p-4 sm:p-10" />
             </div>
 
             {total > 1 && (

@@ -4,8 +4,15 @@ import WishlistContent from '@/components/organisms/WishlistContent';
 import WishlistCurated from '@/components/organisms/WishlistCurated';
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';
+import { pageMeta } from '@/lib/seo';
 
-export const metadata = { title: 'My Wishlist' };
+// Personal page — kept out of search results
+export const metadata = pageMeta({
+  title: 'My Wishlist',
+  description: 'Pieces you have saved at Shri Hari Jewellers.',
+  path: '/wishlist',
+  noIndex: true,
+});
 
 export default async function WishlistPage() {
   const products = await client.fetch(productsQuery) || [];

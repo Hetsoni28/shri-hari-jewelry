@@ -24,6 +24,8 @@ export type CatalogItem = {
   newest: number;
   image: { src: string; fit: Fit; ratio: number } | null;
   thumb: string;
+  /** descriptive alt text for the photo */
+  alt: string;
 };
 
 type Sort = 'featured' | 'newest' | 'name';

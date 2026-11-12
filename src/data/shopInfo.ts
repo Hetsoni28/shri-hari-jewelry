@@ -5,7 +5,7 @@ export const shopInfo = {
   phone1: "+91 99781 01081",
   phone2: "+91 99243 26574",
   email: "contact@shriharijewellers.com",
-  siteUrl: "https://shri-hari-jewellers-eta.vercel.app",
+  siteUrl: "https://shri-hari-kappa.vercel.app",
   address: {
     line1: "Near Mahadev Temple",
     line2: "Opposite Water Tank",

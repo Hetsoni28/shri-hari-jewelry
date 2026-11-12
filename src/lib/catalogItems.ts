@@ -1,6 +1,7 @@
 import { urlForImage } from '@/sanity/image';
 import { frame } from '@/lib/framing';
 import { categoryKey, categoryLabel } from '@/lib/catalog';
+import { productAlt } from '@/lib/seo';
 import type { CatalogItem } from '@/components/organisms/CatalogClient';
 
 type SanityImage = Parameters<typeof urlForImage>[0];
@@ -33,5 +34,6 @@ export const toCatalogItem = (p: CatalogProduct, newest: number): CatalogItem =>
     newest,
     image: img ? frame(img, 640) : null,
     thumb: img ? urlForImage(img)?.width(480).auto('format').url() ?? '' : '',
+    alt: productAlt({ name: p.name, category: p.category, metal: p.metalType, alt: (img as { alt?: string } | undefined)?.alt }),
   };
 };

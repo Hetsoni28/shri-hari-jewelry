@@ -25,6 +25,7 @@ export default function ContactHeader({ image }: { image?: string }) {
     >
       {/* Background Image with Parallax */}
       <motion.div
+        aria-hidden="true"
         className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url("${image || '/images/placeholder.png'}")`,
@@ -54,8 +55,8 @@ export default function ContactHeader({ image }: { image?: string }) {
         className="container mx-auto px-4 relative z-[4] text-center max-w-3xl"
         style={{ y: reduceMotion ? 0 : contentY, opacity: reduceMotion ? 1 : contentOpacity }}
       >
-        {/* Headline — word reveal */}
-        <div className="mb-6 sm:mb-8">
+        {/* Headline — word reveal (the page's h1) */}
+        <h1 className="mb-6 sm:mb-8" aria-label="Connect with Heritage — visit Shri Hari Jewellers">
           {[['Connect'], ['with'], ['Heritage']].map((words, li) => (
             <div key={li} className="overflow-hidden px-2 -mx-2 pb-4 -mb-4">
               {words.map((word, wi) => (
@@ -77,7 +78,7 @@ export default function ContactHeader({ image }: { image?: string }) {
               ))}
             </div>
           ))}
-        </div>
+        </h1>
 
         {/* Subtext */}
         <motion.p

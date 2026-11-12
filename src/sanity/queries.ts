@@ -34,5 +34,9 @@ export const productBySlugQuery = groq`*[_type == "product" && slug.current == $
   category,
   subcategory,
   isNewArrival,
-  metalType
+  metalType,
+  seoTitle,
+  seoDescription,
+  noIndex,
+  _updatedAt
 }`

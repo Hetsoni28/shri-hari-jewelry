@@ -12,6 +12,7 @@ export type NewInItem = {
   src: string;
   fit: Fit;
   ratio: number;
+  alt: string;
   isNew: boolean;
 };
 
@@ -43,7 +44,7 @@ export default function HomeNewIn({ items }: { items: NewInItem[] }) {
                       src={p.src}
                       fit={p.fit}
                       ratio={p.ratio}
-                      alt={p.name}
+                      alt={p.alt}
                       sizes="(min-width: 768px) 25vw, 68vw"
                       imgClassName="transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                     />

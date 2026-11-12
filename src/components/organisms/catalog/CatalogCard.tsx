@@ -31,7 +31,7 @@ export default function CatalogCard({ item, priority }: { item: CatalogItem; pri
               src={item.image.src}
               fit={item.image.fit}
               ratio={item.image.ratio}
-              alt={item.name}
+              alt={item.alt}
               priority={priority}
               sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
               imgClassName="transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"

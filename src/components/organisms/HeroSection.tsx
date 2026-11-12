@@ -13,7 +13,7 @@ import { shopInfo } from '@/data/shopInfo';
 const SLIDE_MS = 5500;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type HeroImage = { src: string; fit: Fit; ratio: number; name: string; category: string; slug?: string };
+type HeroImage = { src: string; fit: Fit; ratio: number; alt?: string; name: string; category: string; slug?: string };
 type Props = { heroImages?: HeroImage[]; productCount?: number };
 
 const CATEGORY_LABEL: Record<string, string> = { Set: 'Sets' };
@@ -232,7 +232,7 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
                           src={item.src}
                           fit={item.fit}
                           ratio={item.ratio}
-                          alt={`${item.name} — ${label(item.category)}`}
+                          alt={item.alt || `${item.name} — ${label(item.category)}`}
                           priority={current === 0}
                           sizes="(min-width: 1024px) 420px, 90vw"
                         />
