@@ -35,7 +35,7 @@ export default function NotFound() {
         </Link>
       </div>
 
-      <p className="mt-14 text-[11px] uppercase tracking-[0.25em] text-[#9E9AAA]">
+      <p className="mt-14 text-[11px] uppercase tracking-[0.25em] text-[#6B6577]">
         {shopInfo.name} · {shopInfo.address.city}, {shopInfo.address.taluka_district}
       </p>
     </main>

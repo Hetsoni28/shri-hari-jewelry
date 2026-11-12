@@ -84,19 +84,19 @@ export default function ProductDetails({ product }: { product: ProductDetailsDat
   return (
     <div>
       {/* Breadcrumb */}
-      <motion.nav {...rise(0)} aria-label="Breadcrumb" className="font-label text-[12px] text-[#8C8698]">
+      <motion.nav {...rise(0)} aria-label="Breadcrumb" className="font-label text-[12px] text-[#6B6577]">
         <ol className="flex flex-wrap items-center gap-2">
-          <li><Link href="/catalog" className="hover:text-[#1C1726]">Catalogue</Link></li>
+          <li><Link href="/catalog" className="hover:text-[#1C1726] inline-block py-2 tap-target">Catalogue</Link></li>
           <li aria-hidden="true" className="text-[#D6CFC0]">/</li>
           <li>
-            <Link href={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-[#1C1726]">
+            <Link href={`/catalog?category=${encodeURIComponent(product.category)}`} className="hover:text-[#1C1726] inline-block py-2 tap-target">
               {product.categoryLabel}
             </Link>
           </li>
         </ol>
       </motion.nav>
 
-      <motion.p {...rise(1)} className="mt-5 font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-[#A8873A]">
+      <motion.p {...rise(1)} className="mt-5 font-label text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8A6D25]">
         {[product.categoryLabel, product.metal].filter(Boolean).join(' · ')}
       </motion.p>
 
@@ -149,7 +149,7 @@ export default function ProductDetails({ product }: { product: ProductDetailsDat
 
         <a
           href={`tel:${shopInfo.phone1.replace(/\s+/g, '')}`}
-          className="mt-0.5 text-center font-label text-[13px] text-[#5F5A6B] transition-colors hover:text-[#1C1726]"
+          className="mt-0.5 text-center font-label text-[13px] text-[#5F5A6B] transition-colors hover:text-[#1C1726] inline-block py-2 tap-target"
         >
           Prefer to talk? Call <span className="font-semibold tabular-nums text-[#1C1726]">{shopInfo.phone1}</span>
         </a>
@@ -166,7 +166,7 @@ export default function ProductDetails({ product }: { product: ProductDetailsDat
       <motion.dl {...rise(6)} className="mt-7 grid grid-cols-3 gap-x-6 gap-y-5 border-t border-[#E9E3D6] pt-7">
         {details.map((d) => (
           <div key={d.label}>
-            <dt className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8C8698]">{d.label}</dt>
+            <dt className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6B6577]">{d.label}</dt>
             <dd className="mt-1.5 font-body text-[15px] text-[#1C1726]">{d.value}</dd>
           </div>
         ))}

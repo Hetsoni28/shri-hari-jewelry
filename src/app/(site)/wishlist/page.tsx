@@ -3,7 +3,7 @@ import WishlistHeader from '@/components/organisms/WishlistHeader';
 import WishlistContent from '@/components/organisms/WishlistContent';
 import WishlistCurated from '@/components/organisms/WishlistCurated';
 import { client } from '@/sanity/client';
-import { productsQuery } from '@/sanity/queries';
+import { catalogProductsQuery } from '@/sanity/queries';
 import { pageMeta } from '@/lib/seo';
 
 // Personal page — kept out of search results
@@ -15,7 +15,7 @@ export const metadata = pageMeta({
 });
 
 export default async function WishlistPage() {
-  const products = await client.fetch(productsQuery) || [];
+  const products = await client.fetch(catalogProductsQuery) || [];
 
   return (
     <div className="bg-[var(--color-background-light)] min-h-screen pt-32 pb-24">

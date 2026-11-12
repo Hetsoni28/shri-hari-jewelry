@@ -31,15 +31,16 @@ const BOX: Record<Exclude<Fit, 'cover'>, string> = {
 export default function FramedImage({ src, alt, fit = 'cover', ratio = 1, sizes, priority, imgClassName = '' }: Props) {
   if (fit === 'cover') {
     return (
-      <Image src={src} alt={alt} fill unoptimized priority={priority} sizes={sizes} className={`object-cover ${imgClassName}`} />
+      <Image src={src} alt={alt} fill priority={priority} sizes={sizes} className={`object-cover ${imgClassName}`} />
     );
   }
 
   return (
     <>
-      <Image src={src} alt="" aria-hidden="true" fill unoptimized sizes={sizes} className="scale-150 object-cover blur-3xl saturate-[0.85]" />
+      {/* heavily blurred, so a tiny version is enough */}
+      <Image src={src} alt="" aria-hidden="true" fill sizes="96px" className="scale-150 object-cover blur-3xl saturate-[0.85]" />
       <div className={`absolute ${BOX[fit]}`} style={{ aspectRatio: ratio }}>
-        <Image src={src} alt={alt} fill unoptimized priority={priority} sizes={sizes} className={`object-cover ${imgClassName}`} />
+        <Image src={src} alt={alt} fill priority={priority} sizes={sizes} className={`object-cover ${imgClassName}`} />
       </div>
     </>
   );

@@ -49,11 +49,11 @@ const nextConfig: NextConfig = {
 
   // ─── World-class image optimization ────────────────────────────────────────
   images: {
-    // In local dev, Sanity CDN resolves to a NAT64 private IP which blocks
-    // Next.js image proxy. Setting unoptimized=true in dev serves images
-    // directly from Sanity CDN (already globally optimized). Production on
-    // Vercel uses full Next.js optimization pipeline — no trade-off.
-    unoptimized: true,
+    // Responsive images come straight from Sanity's image CDN (resized, WebP/AVIF):
+    // see src/lib/sanityImageLoader.ts. No Next.js image proxy is involved, which also
+    // avoids the local-dev NAT64 issue with the proxy.
+    loader: "custom",
+    loaderFile: "./src/lib/sanityImageLoader.ts",
 
     // All quality levels used across the codebase
     qualities: [75, 85, 90, 95],

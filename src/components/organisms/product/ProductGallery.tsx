@@ -51,7 +51,7 @@ export default function ProductGallery({ images, name, isNew }: { images: Galler
 
   if (!image) {
     return (
-      <div className="flex aspect-[4/5] items-center justify-center bg-[#F6F2EA] font-label text-[12px] uppercase tracking-[0.2em] text-[#B5AFBF]">
+      <div className="flex aspect-[4/5] items-center justify-center bg-[#F6F2EA] font-label text-[12px] uppercase tracking-[0.2em] text-[#6B6577]">
         Photo coming soon
       </div>
     );
@@ -163,7 +163,7 @@ export default function ProductGallery({ images, name, isNew }: { images: Galler
             </div>
 
             <div className="relative flex-1" onClick={() => setViewerOpen(false)}>
-              <Image src={image.full} alt={image.alt || name} fill unoptimized sizes="100vw" className="object-contain p-4 sm:p-10" />
+              <Image src={image.full} alt={image.alt || name} fill sizes="100vw" className="object-contain p-4 sm:p-10" />
             </div>
 
             {total > 1 && (

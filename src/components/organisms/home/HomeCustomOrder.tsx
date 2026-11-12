@@ -87,7 +87,7 @@ export default function HomeCustomOrder({
               </a>
               <a
                 href={`tel:${shopInfo.phone1.replace(/\s+/g, '')}`}
-                className="font-label text-[14px] text-[#5F5A6B] transition-colors hover:text-[#1C1726]"
+                className="font-label text-[14px] text-[#5F5A6B] transition-colors hover:text-[#1C1726] inline-block py-2 tap-target"
               >
                 or call <span className="font-semibold text-[#1C1726] tabular-nums">{shopInfo.phone1}</span>
               </a>

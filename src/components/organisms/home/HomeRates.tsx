@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Reveal from '@/components/atoms/Reveal';
-import { rateLabel, useMetalRates } from '@/hooks/useMetalRates';
+import { ASK_RATE_HREF, rateLabel, rateNote, useMetalRateState } from '@/hooks/useMetalRates';
 import { ArrowRight, Eyebrow } from './SectionHeading';
 
 const ROWS = [
@@ -23,7 +23,8 @@ function Trend({ value }: { value?: string }) {
 }
 
 export default function HomeRates({ goldCount, silverCount }: { goldCount: number; silverCount: number }) {
-  const rates = useMetalRates();
+  const { rates, status } = useMetalRateState();
+  const unavailable = status === 'unavailable';
 
   return (
     <section className="bg-[#F7F5FA] py-20 sm:py-28">
@@ -93,18 +94,34 @@ export default function HomeRates({ goldCount, silverCount }: { goldCount: numbe
           <div className="border border-[#E4DEEE] bg-white shadow-[0_30px_60px_-40px_rgba(28,23,38,0.35)]">
             <div className="flex items-center justify-between border-b border-[#EFE9DC] px-6 py-5 sm:px-8">
               <p className="font-headline text-[20px] text-[#1C1726]">Rate per gram</p>
-              <p className="flex items-center gap-2 font-label text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8C8698]">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-                {rates ? rateLabel(rates) : 'Fetching…'}
+              <p className="flex items-center gap-2 font-label text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6B6577]">
+                <span className={`h-1.5 w-1.5 rounded-full ${rates ? 'bg-emerald-500' : 'bg-[#C9A74D]'}`} aria-hidden="true" />
+                {rates ? rateLabel(rates) : unavailable ? 'Not posted yet today' : 'Fetching…'}
               </p>
             </div>
 
+            {unavailable ? (
+              <div className="px-6 py-10 text-center sm:px-8">
+                <p className="mx-auto max-w-sm font-body text-[16px] leading-[1.7] text-[#3B3448]">
+                  Today&apos;s rate hasn&apos;t been posted yet. Message us and we&apos;ll send you the exact 22KT, 24KT,
+                  18KT and silver rate for today.
+                </p>
+                <a
+                  href={ASK_RATE_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-flex items-center gap-2.5 bg-[#1C1726] px-6 py-3.5 font-label text-[12px] font-semibold uppercase tracking-[0.18em] text-white transition-colors duration-300 hover:bg-[#8069BF]"
+                >
+                  Ask for today&apos;s rate
+                </a>
+              </div>
+            ) : (
             <dl className="divide-y divide-[#F1ECDF]">
               {ROWS.map((r) => (
                 <div key={r.key} className="flex items-center justify-between gap-4 px-6 py-5 sm:px-8">
                   <dt>
                     <span className="block font-label text-[14px] font-semibold text-[#1C1726]">{r.label}</span>
-                    {r.note && <span className="mt-0.5 block font-label text-[12px] text-[#8C8698]">{r.note}</span>}
+                    {r.note && <span className="mt-0.5 block font-label text-[12px] text-[#6B6577]">{r.note}</span>}
                   </dt>
                   <dd className="flex items-baseline gap-3 text-right">
                     {r.key === 'gold22' && <Trend value={rates?.trend.gold22} />}
@@ -116,11 +133,10 @@ export default function HomeRates({ goldCount, silverCount }: { goldCount: numbe
                 </div>
               ))}
             </dl>
+            )}
 
-            <p className="border-t border-[#EFE9DC] bg-[#FDFCFA] px-6 py-4 font-label text-[12px] leading-relaxed text-[#8C8698] sm:px-8">
-              {rates?.source === 'shop'
-                ? "Our rate for the day, before 3% GST and making charges. Ask us on WhatsApp for any piece's price."
-                : 'Estimated from international prices + 6% import duty, before 3% GST and making charges. The final rate is confirmed with you at the shop or on WhatsApp.'}
+            <p className="border-t border-[#EFE9DC] bg-[#FDFCFA] px-6 py-4 font-label text-[12px] leading-relaxed text-[#6B6577] sm:px-8">
+              {rateNote()} Ask us on WhatsApp for any piece&apos;s exact price.
             </p>
           </div>
         </Reveal>

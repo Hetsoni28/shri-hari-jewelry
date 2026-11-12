@@ -1,8 +1,8 @@
 import {defineField, defineType} from 'sanity'
 
-// The shop's own board rate for the day. When one is published within the last
-// 36 hours the whole site shows it ("Shop rate"); otherwise the site falls back to
-// a calculated market estimate. To update: Studio → "Today's rate" → create new.
+// The shop's own Indian board rate. The site shows the latest one set within the last
+// 36 hours ("Shop rate"); otherwise it shows no number and invites visitors to ask on
+// WhatsApp. To update: Studio → "Today's rate" → create new.
 const perGram = (name: string, title: string, min: number, max: number) =>
   defineField({
     name,
@@ -20,6 +20,8 @@ export default defineType({
   name: 'dailyRate',
   title: "Today's rate",
   type: 'document',
+  description:
+    "Enter today's rate each morning — the website shows it straight away. If no rate is entered for 36 hours, the site asks visitors to message you for the rate instead of showing an old number.",
   fields: [
     defineField({
       name: 'updatedAt',

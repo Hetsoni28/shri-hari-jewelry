@@ -3,7 +3,7 @@ import ContactInfoAndForm from '@/components/organisms/ContactInfoAndForm';
 import ContactMapAndCraftsmanship from '@/components/organisms/ContactMapAndCraftsmanship';
 import { client } from '@/sanity/client';
 import { urlForImage } from '@/sanity/image';
-import { productsQuery } from '@/sanity/queries';
+import { catalogProductsQuery } from '@/sanity/queries';
 import { jsonLd, pageMeta } from '@/lib/seo';
 import { jewelryStoreLd } from '@/lib/storeLd';
 
@@ -17,7 +17,7 @@ export const metadata = pageMeta({
 });
 
 export default async function ContactPage() {
-  const products = await client.fetch(productsQuery);
+  const products = await client.fetch(catalogProductsQuery);
 
   // Pick unique images for the contact page by searching backwards (oldest first).
   // The homepage picks from the front (newest first), so this guarantees no overlap

@@ -137,6 +137,17 @@ export default function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-6 font-label text-[12px] text-white/45 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <p>© {new Date().getFullYear()} {shopInfo.name}. All rights reserved.</p>
           <p>Proprietor: {shopInfo.owner}</p>
+          <p>
+            Designed &amp; developed by{' '}
+            <a
+              href="https://www.hntech.in/"
+              target="_blank"
+              rel="noopener"
+              className="font-semibold text-white/75 underline-offset-4 transition-colors hover:text-[#E8C766] hover:underline"
+            >
+              HN Tech
+            </a>
+          </p>
         </div>
       </div>
     </footer>

@@ -40,7 +40,7 @@ export default function HomeCategories({ categories, total }: { categories: Cate
                     <span className="font-headline text-[18px] text-[#1C1726] transition-colors duration-300 group-hover:text-[#8069BF] sm:text-[21px]">
                       {c.label}
                     </span>
-                    <span className="font-label text-[12px] tabular-nums text-[#8C8698]">
+                    <span className="font-label text-[12px] tabular-nums text-[#6B6577]">
                       {c.count} {c.count === 1 ? 'design' : 'designs'}
                     </span>
                   </div>

@@ -12,7 +12,7 @@ export default function WishlistCurated({ products = [] }: { products?: { _id: s
     <div className="mt-16 pt-12 border-t border-secondary/20">
       <div className="flex justify-between items-end mb-8">
         <div></div>
-        <Link href="/catalog" className="text-[9px] uppercase tracking-widest font-bold text-tertiary hover:text-primary transition-colors border-b border-tertiary pb-1">
+        <Link href="/catalog" className="text-[9px] uppercase tracking-widest font-bold text-tertiary hover:text-primary transition-colors border-b border-tertiary pb-1 inline-block py-2 tap-target">
           VIEW CATALOG
         </Link>
       </div>

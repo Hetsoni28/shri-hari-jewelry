@@ -10,7 +10,7 @@ export function ArrowRight({ className = '' }: { className?: string }) {
 
 export function Eyebrow({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={`flex items-center gap-3 font-label text-[11px] font-semibold uppercase tracking-[0.3em] text-[#A8873A] ${className}`}>
+    <p className={`flex items-center gap-3 font-label text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8A6D25] ${className}`}>
       <span className="h-px w-8 bg-[#C9A74D]" aria-hidden="true" />
       {children}
     </p>

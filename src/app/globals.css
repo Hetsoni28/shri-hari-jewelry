@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @source not "../../remotion-hero";
 
@@ -24,9 +23,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
-  --font-headline: 'Playfair Display', serif;
-  --font-body: 'Source Serif 4', serif;
-  --font-label: 'Source Sans 3', sans-serif;
+  /* Self-hosted by next/font in app/layout.tsx (no render-blocking request to Google) */
+  --font-headline: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  --font-body: var(--font-source-serif), 'Source Serif 4', Georgia, serif;
+  --font-label: var(--font-source-sans), 'Source Sans 3', system-ui, sans-serif;
 
   /* Custom Master Breakpoints */
   --breakpoint-xs: 320px;
@@ -362,3 +362,14 @@ html[data-welcome='seen'] .sh-welcome {
   }
 }
 
+
+/* ── Accessibility ─────────────────────────────────────────────────────────── */
+/* Keyboard focus is always visible (mouse clicks don't show it) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid #8069BF;
+  outline-offset: 3px;
+}
+/* Gold ring where the background is dark (footer, rate bar) */
+:where(footer, .on-dark) :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline-color: #E8C766;
+}

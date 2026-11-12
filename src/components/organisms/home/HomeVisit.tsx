@@ -25,7 +25,7 @@ export default function HomeVisit() {
 
           <div className="mt-10 grid max-w-xl gap-8 sm:grid-cols-2">
             <div>
-              <p className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8C8698]">Address</p>
+              <p className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6B6577]">Address</p>
               <address className="mt-3 font-body text-[16px] not-italic leading-[1.7] text-[#1C1726]">
                 {address.line1},<br />
                 {address.line2},<br />
@@ -34,7 +34,7 @@ export default function HomeVisit() {
               </address>
             </div>
             <div>
-              <p className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8C8698]">Call</p>
+              <p className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6B6577]">Call</p>
               <ul className="mt-3 space-y-1.5 font-body text-[16px] text-[#1C1726]">
                 {[shopInfo.phone1, shopInfo.phone2].map((ph) => (
                   <li key={ph}>
@@ -72,12 +72,12 @@ export default function HomeVisit() {
           <div className="relative flex h-full min-h-[320px] flex-col items-center justify-center overflow-hidden rounded-t-full border border-[#C9A74D]/45 bg-[#FDFCFA] px-8 pb-12 pt-24 text-center">
             <div aria-hidden="true" className="absolute inset-3 rounded-t-full border border-[#C9A74D]/20" />
             <p className="relative text-[clamp(2.2rem,4vw,3.2rem)] font-bold leading-tight text-[#8069BF]">શ્રી હરિ જ્વેલર્સ</p>
-            <p className="relative mt-2 text-[18px] font-bold text-[#A8873A]">પાદરાવાળા</p>
+            <p className="relative mt-2 text-[18px] font-bold text-[#8A6D25]">પાદરાવાળા</p>
             <span aria-hidden="true" className="relative my-6 h-px w-16 bg-[#C9A74D]" />
             <p className="relative font-label text-[11px] font-semibold uppercase tracking-[0.3em] text-[#5F5A6B]">
               {address.city} · {address.taluka_district} · Since 2001
             </p>
-            <p className="relative mt-3 font-body text-[14px] italic text-[#8C8698]">{shopInfo.owner}</p>
+            <p className="relative mt-3 font-body text-[14px] italic text-[#6B6577]">{shopInfo.owner}</p>
           </div>
         </Reveal>
       </div>

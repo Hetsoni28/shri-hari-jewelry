@@ -4,7 +4,7 @@ import Link from 'next/link';
 import FramedImage, { type Fit } from '@/components/atoms/FramedImage';
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useMetalRates } from '@/hooks/useMetalRates';
+import { ASK_RATE_HREF, useMetalRateState } from '@/hooks/useMetalRates';
 import { shopInfo } from '@/data/shopInfo';
 
 // How long each piece stays in the frame. The gold progress line under the
@@ -58,7 +58,7 @@ const intro = {
 export default function HeroSection({ heroImages = [], productCount }: Props) {
   const reduceMotion = !!useReducedMotion();
   const ready = useIntroReady();
-  const rates = useMetalRates();
+  const { rates, status: rateStatus } = useMetalRateState();
 
   const [current, setCurrent] = useState(0);
   const [hovered, setHovered] = useState(false);
@@ -96,7 +96,7 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
           <div className="min-w-0 lg:col-span-6">
             <motion.p
               {...anim(0)}
-              className="flex items-center gap-3 font-label text-[11px] font-semibold uppercase tracking-[0.3em] text-[#A8873A]"
+              className="flex items-center gap-3 font-label text-[11px] font-semibold uppercase tracking-[0.3em] text-[#8A6D25]"
             >
               <span className="h-px w-8 bg-[#C9A74D]" />
               Mogar, Anand · Since 2001
@@ -165,32 +165,40 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
               className="mt-12 grid max-w-[34rem] grid-cols-3 divide-x divide-[#E9E3D6] border-y border-[#E9E3D6]"
             >
               <div className="py-4 pr-3 sm:pr-5">
-                <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8C8698] sm:text-[11px]">
+                <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#6B6577] sm:text-[11px]">
                   22KT today
                 </dt>
                 <dd className="mt-1.5 font-headline text-[19px] tabular-nums text-[#1C1726] sm:text-[24px]">
-                  {rates ? `₹${rates.gold22.toLocaleString('en-IN')}` : <span className="text-[#CFC8BA]">₹ —</span>}
+                  {rates ? (
+                    `₹${rates.gold22.toLocaleString('en-IN')}`
+                  ) : rateStatus === 'unavailable' ? (
+                    <a href={ASK_RATE_HREF} target="_blank" rel="noopener noreferrer" className="border-b border-[#C9A74D]/70 text-[17px] transition-colors hover:text-[#8069BF] sm:text-[20px] inline-block py-2 tap-target">
+                      Ask us
+                    </a>
+                  ) : (
+                    <span className="text-[#CFC8BA]">₹ —</span>
+                  )}
                 </dd>
-                <dd className="mt-0.5 flex items-center gap-1.5 font-label text-[11px] text-[#8C8698]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
-                  {rates?.source === 'market' ? 'per gram, market est.' : 'per gram, today'}
+                <dd className="mt-0.5 flex items-center gap-1.5 font-label text-[11px] text-[#6B6577]">
+                  <span className={`h-1.5 w-1.5 rounded-full ${rates ? 'bg-emerald-500' : 'bg-[#C9A74D]'}`} aria-hidden="true" />
+                  {rates ? 'per gram, our rate' : 'on WhatsApp'}
                 </dd>
               </div>
               <div className="px-3 py-4 sm:px-5">
-                <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8C8698] sm:text-[11px]">
+                <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#6B6577] sm:text-[11px]">
                   Designs
                 </dt>
                 <dd className="mt-1.5 font-headline text-[19px] tabular-nums text-[#1C1726] sm:text-[24px]">
                   {productCount && productCount > 0 ? productCount : '100+'}
                 </dd>
-                <dd className="mt-0.5 font-label text-[11px] text-[#8C8698]">in the catalogue</dd>
+                <dd className="mt-0.5 font-label text-[11px] text-[#6B6577]">in the catalogue</dd>
               </div>
               <div className="py-4 pl-3 sm:pl-5">
-                <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8C8698] sm:text-[11px]">
+                <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-[#6B6577] sm:text-[11px]">
                   Hallmark
                 </dt>
                 <dd className="mt-1.5 font-headline text-[19px] text-[#1C1726] sm:text-[24px]">BIS</dd>
-                <dd className="mt-0.5 font-label text-[11px] text-[#8C8698]">certified gold</dd>
+                <dd className="mt-0.5 font-label text-[11px] text-[#6B6577]">certified gold</dd>
               </div>
             </motion.dl>
           </div>
@@ -265,9 +273,9 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
                           exit={{ opacity: 0, y: -6 }}
                           transition={{ duration: 0.35, ease: EASE }}
                         >
-                          <p className="flex items-center justify-between font-label text-[10px] font-semibold uppercase tracking-[0.22em] text-[#A8873A]">
+                          <p className="flex items-center justify-between font-label text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8A6D25]">
                             <span>{label(item.category)}</span>
-                            <span className="tabular-nums text-[#B5AFBF]">
+                            <span className="tabular-nums text-[#6B6577]">
                               {pad(current + 1)} / {pad(total)}
                             </span>
                           </p>
@@ -276,7 +284,7 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
                           </p>
                           <Link
                             href={item.slug ? `/catalog/${item.slug}` : `/catalog?category=${encodeURIComponent(item.category)}`}
-                            className="mt-2 inline-flex items-center gap-2 font-label text-[12px] font-semibold text-[#8069BF] hover:text-[#1C1726] transition-colors"
+                            className="mt-2 inline-flex items-center gap-2 font-label text-[12px] font-semibold text-[#8069BF] hover:text-[#1C1726] transition-colors py-2 tap-target"
                           >
                             View this piece
                             <svg width="13" height="9" viewBox="0 0 16 10" fill="none" aria-hidden="true">
@@ -307,7 +315,7 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
                           />
                           <span
                             className={`font-label text-[12px] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                              i === current ? 'font-semibold text-[#1C1726]' : 'text-[#9A94A6] group-hover:text-[#5F5A6B]'
+                              i === current ? 'font-semibold text-[#1C1726]' : 'text-[#6B6577] group-hover:text-[#5F5A6B]'
                             }`}
                           >
                             {label(h.category)}
@@ -331,10 +339,10 @@ export default function HeroSection({ heroImages = [], productCount }: Props) {
                       type="button"
                       onClick={() => go(i)}
                       aria-current={i === current ? 'true' : undefined}
-                      className={`shrink-0 border-b pb-1.5 font-label text-[12px] uppercase tracking-[0.16em] transition-colors ${
+                      className={`shrink-0 border-b pb-2.5 pt-2 font-label text-[12px] uppercase tracking-[0.16em] transition-colors ${
                         i === current
                           ? 'border-[#C9A74D] font-semibold text-[#1C1726]'
-                          : 'border-transparent text-[#9A94A6]'
+                          : 'border-transparent text-[#6B6577]'
                       }`}
                     >
                       {label(h.category)}

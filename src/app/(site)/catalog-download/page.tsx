@@ -1,7 +1,7 @@
 import React from 'react';
 import CatalogDownloadContent from '@/components/organisms/CatalogDownloadContent';
 import { client } from '@/sanity/client';
-import { productsQuery } from '@/sanity/queries';
+import { catalogProductsQuery } from '@/sanity/queries';
 import { urlForImage } from '@/sanity/image';
 import { pageMeta } from '@/lib/seo';
 
@@ -16,7 +16,7 @@ export const metadata = pageMeta({
 });
 
 export default async function CatalogDownloadPage() {
-  const sanityProducts = await client.fetch(productsQuery) || [];
+  const sanityProducts = await client.fetch(catalogProductsQuery) || [];
 
   interface SanityProduct {
     _id: string;

@@ -54,7 +54,7 @@ export default function HomeNewIn({ items }: { items: NewInItem[] }) {
                       </span>
                     )}
                   </MaskReveal>
-                  <p className="mt-4 font-label text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A8873A]">
+                  <p className="mt-4 font-label text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8A6D25]">
                     {CATEGORY_LABEL[p.category] ?? p.category} · {p.metal}
                   </p>
                   <p className="mt-1.5 line-clamp-2 font-headline text-[17px] leading-snug text-[#1C1726] transition-colors duration-300 group-hover:text-[#8069BF]">

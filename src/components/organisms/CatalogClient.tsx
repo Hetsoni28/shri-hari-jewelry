@@ -83,7 +83,7 @@ function Segmented({
 
   return (
     <div className="flex items-center gap-3">
-      <span className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8C8698]">{label}</span>
+      <span className="font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6B6577]">{label}</span>
       <div role="group" aria-label={label} className="flex border border-[#E2DCCF] bg-white p-0.5">
         {shown.map((o) => {
           const active = o.value === value;
@@ -93,7 +93,7 @@ function Segmented({
               type="button"
               aria-pressed={active}
               onClick={() => onChange(o.value)}
-              className={`px-3.5 py-1.5 font-label text-[12px] font-semibold transition-colors duration-200 ${
+              className={`min-h-[40px] px-4 py-2 font-label text-[12px] font-semibold transition-colors duration-200 ${
                 active ? 'bg-[#1C1726] text-white' : 'text-[#5F5A6B] hover:text-[#1C1726]'
               }`}
             >
@@ -214,11 +214,11 @@ export default function CatalogClient({ items }: { items: CatalogItem[] }) {
                 aria-pressed={active}
                 onClick={() => update('category', c.key === 'all' ? null : c.key)}
                 className={`relative shrink-0 py-5 font-label text-[13px] transition-colors duration-200 ${
-                  active ? 'font-semibold text-[#1C1726]' : 'text-[#8C8698] hover:text-[#1C1726]'
+                  active ? 'font-semibold text-[#1C1726]' : 'text-[#6B6577] hover:text-[#1C1726]'
                 }`}
               >
                 {c.label}
-                <sup className="ml-1 text-[10px] font-normal tabular-nums text-[#B5AFBF]">{c.count}</sup>
+                <sup className="ml-1 text-[10px] font-normal tabular-nums text-[#6B6577]">{c.count}</sup>
                 {active && (
                   <motion.span
                     layoutId="catalog-category"
@@ -241,11 +241,11 @@ export default function CatalogClient({ items }: { items: CatalogItem[] }) {
           </div>
 
           <div className="flex items-center justify-between gap-6 md:justify-end">
-            <p className="font-label text-[13px] text-[#8C8698]" aria-live="polite">
+            <p className="font-label text-[13px] text-[#6B6577]" aria-live="polite">
               <span className="font-semibold tabular-nums text-[#1C1726]">{results.length}</span>{' '}
               {results.length === 1 ? 'piece' : 'pieces'}
             </p>
-            <label className="flex items-center gap-2.5 font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8C8698]">
+            <label className="flex items-center gap-2.5 font-label text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6B6577]">
               Sort
               <span className="relative">
                 <select
@@ -257,7 +257,7 @@ export default function CatalogClient({ items }: { items: CatalogItem[] }) {
                     <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
                 </select>
-                <svg aria-hidden="true" width="10" height="6" viewBox="0 0 10 6" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8C8698]">
+                <svg aria-hidden="true" width="10" height="6" viewBox="0 0 10 6" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#6B6577]">
                   <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.3" />
                 </svg>
               </span>
@@ -276,7 +276,7 @@ export default function CatalogClient({ items }: { items: CatalogItem[] }) {
                 aria-label={`Remove filter: ${chip.label}`}
               >
                 {chip.label}
-                <span aria-hidden="true" className="text-[#8C8698]">×</span>
+                <span aria-hidden="true" className="text-[#6B6577]">×</span>
               </button>
             ))}
             <button
@@ -323,7 +323,7 @@ export default function CatalogClient({ items }: { items: CatalogItem[] }) {
 
         {results.length > visibleCount && (
           <div className="mt-16 flex flex-col items-center gap-4">
-            <p className="font-label text-[13px] text-[#8C8698]">
+            <p className="font-label text-[13px] text-[#6B6577]">
               Showing <span className="tabular-nums text-[#1C1726]">{visibleCount}</span> of{' '}
               <span className="tabular-nums text-[#1C1726]">{results.length}</span>
             </p>
@@ -363,7 +363,7 @@ export default function CatalogClient({ items }: { items: CatalogItem[] }) {
             >
               Ask on WhatsApp
             </a>
-            <a href={`tel:${shopInfo.phone1.replace(/\s+/g, '')}`} className="font-label text-[14px] text-[#5F5A6B] transition-colors hover:text-[#1C1726]">
+            <a href={`tel:${shopInfo.phone1.replace(/\s+/g, '')}`} className="font-label text-[14px] text-[#5F5A6B] transition-colors hover:text-[#1C1726] inline-block py-2 tap-target">
               or call <span className="font-semibold tabular-nums text-[#1C1726]">{shopInfo.phone1}</span>
             </a>
           </div>

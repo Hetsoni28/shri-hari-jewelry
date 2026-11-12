@@ -1,8 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Playfair_Display, Source_Sans_3, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { shopInfo } from "@/data/shopInfo";
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 import LuxuryLoader from "@/components/loading/LuxuryLoader";
+
+// Fonts are self-hosted at build time (no request to Google, no layout jump on load)
+const playfair = Playfair_Display({ subsets: ['latin'], weight: ['400', '500', '600', '700'], style: ['normal', 'italic'], variable: '--font-playfair', display: 'swap' });
+const sourceSerif = Source_Serif_4({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-source-serif', display: 'swap' });
+const sourceSans = Source_Sans_3({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-source-sans', display: 'swap' });
 
 const DEFAULT_TITLE = `${SITE_NAME} | Gold & Silver Jewellery in Mogar, Anand`;
 const DEFAULT_DESCRIPTION =
@@ -60,7 +66,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-IN"
-      className="h-full antialiased"
+      className={`h-full antialiased ${playfair.variable} ${sourceSerif.variable} ${sourceSans.variable}`}
       data-scroll-behavior="smooth"
       // the inline script below may add data-welcome before React hydrates
       suppressHydrationWarning

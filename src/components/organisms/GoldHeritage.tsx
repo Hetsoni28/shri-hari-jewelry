@@ -130,7 +130,7 @@ export default function GoldHeritage({ products }: { products: any[] }) {
 
               <Link
                 href={temple?.slug ? `/catalog/${encodeURIComponent(temple.slug)}` : '/catalog'}
-                className="group/link inline-flex items-center gap-2 text-xs font-label uppercase tracking-widest font-bold text-[var(--color-primary)] hover:text-[var(--color-tertiary)] transition-colors duration-300"
+                className="group/link inline-flex items-center gap-2 text-xs font-label uppercase tracking-widest font-bold text-[var(--color-primary)] hover:text-[var(--color-tertiary)] transition-colors duration-300 py-2 tap-target"
               >
                 VIEW PRODUCT
                 <motion.span

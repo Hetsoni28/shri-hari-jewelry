@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { shopInfo } from '@/data/shopInfo';
 import { useWishlist } from '@/context/WishlistContext';
-import { useMetalRates } from '@/hooks/useMetalRates';
+import { ASK_RATE_HREF, useMetalRateState } from '@/hooks/useMetalRates';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -54,13 +54,20 @@ function WhatsAppIcon({ className = '' }: { className?: string }) {
 }
 
 function Rates() {
-  const rates = useMetalRates();
+  const { rates, status } = useMetalRateState();
   const fmt = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+  if (status === 'unavailable')
+    return (
+      <a href={ASK_RATE_HREF} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 transition-colors hover:text-[#E8C766]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#C9A74D]" aria-hidden="true" />
+        Ask us for today&apos;s gold rate on WhatsApp
+      </a>
+    );
   if (!rates) return <span className="text-white/50">Today&apos;s gold rate…</span>;
   return (
     <span className="flex items-center gap-2 tabular-nums">
       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-      <span className="text-white/60">{rates.source === 'shop' ? "Today's rate" : 'Market est.'}</span>
+      <span className="text-white/60">Today&apos;s rate</span>
       <span>22KT {fmt(rates.gold22)}/g</span>
       <span className="hidden text-white/30 sm:inline">·</span>
       <span className="hidden sm:inline">24KT {fmt(rates.gold24)}/g</span>
@@ -77,6 +84,19 @@ export default function Navbar() {
   const [megaOpen, setMegaOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
+
+  // Drawer focus: move into it when it opens, back to the menu button when it closes
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const opener = menuBtnRef.current;
+    const t = setTimeout(() => drawerCloseRef.current?.focus(), 50);
+    return () => {
+      clearTimeout(t);
+      opener?.focus();
+    };
+  }, [drawerOpen]);
 
   // Close menus whenever the page changes
   const [lastPath, setLastPath] = useState(pathname);
@@ -86,8 +106,10 @@ export default function Navbar() {
     setDrawerOpen(false);
   }
 
+  // Hysteresis (on past 40px, off below 8px) so the state can't flicker at a threshold.
+  // Nothing that depends on it changes the page layout — only a shadow and a transform.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled((was) => (was ? window.scrollY > 8 : window.scrollY > 40));
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -118,43 +140,35 @@ export default function Navbar() {
     closeTimer.current = setTimeout(() => setMegaOpen(false), 140);
   };
 
-  const iconBtn = 'relative flex h-10 w-10 items-center justify-center text-[#1C1726] transition-colors hover:text-[#8069BF]';
+  const iconBtn = 'relative flex h-11 w-11 items-center justify-center text-[#1C1726] transition-colors hover:text-[#8069BF]';
 
   return (
     <>
+      {/* ── Rate bar — a normal strip that scrolls away with the page (no collapsing
+          animation, so scrolling never shifts the layout) ── */}
+      <div className="on-dark bg-[#2A2142] font-label text-[11px] text-white sm:text-[12px]">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-5 py-2 sm:justify-between sm:px-8 lg:px-12">
+          <Rates />
+          <span className="hidden items-center gap-5 text-white/75 sm:flex">
+            <span>
+              {shopInfo.address.city}, {shopInfo.address.taluka_district}
+            </span>
+            <a href={TEL} className="tabular-nums text-white transition-colors hover:text-[#E8C766]">
+              {shopInfo.phone1}
+            </a>
+          </span>
+        </div>
+      </div>
+
+      {/* ── Main bar — pinned, fixed height; scrolling only adds a shadow ── */}
       <header
         className={`sticky top-0 z-50 bg-white/95 backdrop-blur-md transition-shadow duration-500 ${
           scrolled ? 'shadow-[0_8px_30px_-18px_rgba(28,23,38,0.35)]' : ''
         }`}
         onMouseLeave={closeMega}
       >
-        {/* ── Rate bar — folds away on scroll ── */}
-        <motion.div
-          initial={false}
-          animate={{ height: scrolled ? 0 : 'auto', opacity: scrolled ? 0 : 1 }}
-          transition={{ duration: 0.35, ease: EASE }}
-          className="overflow-hidden bg-[#2A2142] font-label text-[11px] text-white sm:text-[12px]"
-        >
-          <div className="mx-auto flex max-w-7xl items-center justify-center gap-6 px-5 py-2 sm:justify-between sm:px-8 lg:px-12">
-            <Rates />
-            <span className="hidden items-center gap-5 text-white/75 sm:flex">
-              <span>
-                {shopInfo.address.city}, {shopInfo.address.taluka_district}
-              </span>
-              <a href={TEL} className="tabular-nums text-white transition-colors hover:text-[#E8C766]">
-                {shopInfo.phone1}
-              </a>
-            </span>
-          </div>
-        </motion.div>
-
-        {/* ── Main bar ── */}
         <div className="border-b border-[#EFE9DC]">
-          <div
-            className={`mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 transition-[padding] duration-500 sm:px-8 lg:px-12 ${
-              scrolled ? 'py-2' : 'py-3.5'
-            }`}
-          >
+          <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 py-3 sm:px-8 lg:px-12">
             {/* Left — navigation (desktop) / menu button (mobile) */}
             <nav className="hidden items-center gap-9 lg:flex" aria-label="Main">
               {LINKS.map((l) => {
@@ -167,6 +181,18 @@ export default function Navbar() {
                     onFocus={l.mega ? openMega : undefined}
                     aria-expanded={l.mega ? megaOpen : undefined}
                     aria-haspopup={l.mega ? 'true' : undefined}
+                    aria-controls={l.mega ? 'mega-menu' : undefined}
+                    onKeyDown={
+                      l.mega
+                        ? (e) => {
+                            if (e.key === 'ArrowDown') {
+                              e.preventDefault();
+                              openMega();
+                              setTimeout(() => document.querySelector<HTMLAnchorElement>('#mega-menu a')?.focus(), 60);
+                            }
+                          }
+                        : undefined
+                    }
                     className={`group relative py-2 font-label text-[12px] font-semibold uppercase tracking-[0.2em] transition-colors ${
                       active ? 'text-[#1C1726]' : 'text-[#5F5A6B] hover:text-[#1C1726]'
                     }`}
@@ -190,6 +216,7 @@ export default function Navbar() {
             </nav>
             <button
               type="button"
+              ref={menuBtnRef}
               onClick={() => setDrawerOpen(true)}
               aria-label="Open menu"
               aria-expanded={drawerOpen}
@@ -210,7 +237,7 @@ export default function Navbar() {
                 <span data-brand-name className="text-[21px] font-bold leading-tight text-[#1C1726] sm:text-[26px]">
                   શ્રી હરિ જ્વેલર્સ
                 </span>
-                <span className="mt-1 font-label text-[9px] font-semibold uppercase tracking-[0.36em] text-[#A8873A] sm:text-[10px]">
+                <span className="mt-1 font-label text-[9px] font-semibold uppercase tracking-[0.36em] text-[#8A6D25] sm:text-[10px]">
                   Shree Hari Jewellers
                 </span>
               </motion.span>
@@ -260,6 +287,11 @@ export default function Navbar() {
           {megaOpen && (
             <motion.div
               key="mega"
+              id="mega-menu"
+              onBlur={(e) => {
+                // keyboard users tabbing out of the panel close it
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) closeMega();
+              }}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
@@ -270,7 +302,7 @@ export default function Navbar() {
             >
               <div className="mx-auto grid max-w-7xl grid-cols-12 gap-10 px-12 py-10">
                 <div className="col-span-5">
-                  <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#A8873A]">Shop by piece</p>
+                  <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8A6D25]">Shop by piece</p>
                   <ul className="mt-5 grid grid-cols-2 gap-x-8 gap-y-3">
                     {SHOP.pieces.map((p) => (
                       <li key={p.href}>
@@ -290,7 +322,7 @@ export default function Navbar() {
                     ['For', SHOP.for],
                   ].map(([title, links]) => (
                     <div key={title as string}>
-                      <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#A8873A]">{title as string}</p>
+                      <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8A6D25]">{title as string}</p>
                       <ul className="mt-4 space-y-2.5">
                         {(links as { label: string; href: string }[]).map((l) => (
                           <li key={l.href}>
@@ -305,7 +337,7 @@ export default function Navbar() {
                 </div>
                 <div className="col-span-4">
                   <div className="h-full bg-[#F7F5FA] p-7">
-                    <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#A8873A]">Made to order</p>
+                    <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8A6D25]">Made to order</p>
                     <p className="mt-3 font-headline text-[22px] leading-snug text-[#1C1726]">
                       Can&apos;t find it? <em className="font-normal italic text-[#8069BF]">We&apos;ll make it.</em>
                     </p>
@@ -355,9 +387,9 @@ export default function Navbar() {
               <div className="flex items-center justify-between border-b border-[#EFE9DC] px-5 py-4">
                 <Link href="/" className="flex flex-col leading-none" onClick={() => setDrawerOpen(false)}>
                   <span className="text-[19px] font-bold leading-tight text-[#1C1726]">શ્રી હરિ જ્વેલર્સ</span>
-                  <span className="mt-1 font-label text-[9px] font-semibold uppercase tracking-[0.32em] text-[#A8873A]">Shree Hari Jewellers</span>
+                  <span className="mt-1 font-label text-[9px] font-semibold uppercase tracking-[0.32em] text-[#8A6D25]">Shree Hari Jewellers</span>
                 </Link>
-                <button type="button" onClick={() => setDrawerOpen(false)} aria-label="Close menu" className={iconBtn}>
+                <button ref={drawerCloseRef} type="button" onClick={() => setDrawerOpen(false)} aria-label="Close menu" className={iconBtn}>
                   <svg width="18" height="18" viewBox="0 0 14 14" aria-hidden="true">
                     <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.3" />
                   </svg>
@@ -365,7 +397,7 @@ export default function Navbar() {
               </div>
 
               <div className="flex-1 overflow-y-auto px-5 py-6">
-                <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#A8873A]">Shop by piece</p>
+                <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8A6D25]">Shop by piece</p>
                 <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
                   {SHOP.pieces.map((p) => (
                     <li key={p.href}>
@@ -398,7 +430,7 @@ export default function Navbar() {
                 </ul>
 
                 <div className="mt-8 font-body text-[14px] leading-[1.7] text-[#5F5A6B]">
-                  <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#A8873A]">Visit the shop</p>
+                  <p className="font-label text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8A6D25]">Visit the shop</p>
                   <p className="mt-2">
                     {shopInfo.address.line1}, {shopInfo.address.line2},<br />
                     {shopInfo.address.city}, {shopInfo.address.taluka_district}

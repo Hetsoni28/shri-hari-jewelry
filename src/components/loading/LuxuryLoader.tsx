@@ -205,7 +205,7 @@ export default function LuxuryLoader() {
 
             <motion.p
               className="mt-2.5 font-label text-[9px] uppercase tracking-[0.34em] sm:text-[10px]"
-              style={{ color: GOLD_DEEP }}
+              style={{ color: '#8A6D25' }}
               initial={reduceMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={spring(1.3)}
@@ -220,7 +220,7 @@ export default function LuxuryLoader() {
       {!reduceMotion && (
         <motion.p
           className="pointer-events-none absolute inset-x-0 bottom-7 text-center font-label text-[10px] uppercase tracking-[0.3em]"
-          style={{ color: '#B5AFBF' }}
+          style={{ color: '#6B6577' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: exit ? 0 : 1 }}
           transition={{ delay: exit ? 0 : 1, duration: exit ? 0.2 : 0.5 }}
