@@ -7,6 +7,8 @@ import { urlForImage } from '@/sanity/image';
 // export const revalidate = 60; // Removed to ensure PDFs are always perfectly up to date
 export const dynamic = 'force-dynamic';
 
+export const metadata = { title: 'Download PDF Catalogue' };
+
 export default async function CatalogDownloadPage() {
   const sanityProducts = await client.fetch(productsQuery) || [];
 

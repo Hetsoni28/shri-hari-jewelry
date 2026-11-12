@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+@source not "../../remotion-hero";
 
 
 :root {
@@ -230,6 +231,23 @@ body {
 }
 
 /* ── Marquee for Live Ticker ── */
+/* Welcome animation — already seen this session (set by the inline script in layout.tsx) */
+html[data-welcome='seen'] .sh-welcome {
+  display: none;
+}
+
+/* Home — a shallow arch for product tiles: keeps the motif without cutting into the photo */
+.arch-soft {
+  border-top-left-radius: 50% 30%;
+  border-top-right-radius: 50% 30%;
+}
+
+/* Home hero — slide timer line under the caption */
+@keyframes hero-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-100%); }

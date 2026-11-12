@@ -1,289 +1,233 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, type Transition } from 'framer-motion'
+
+/**
+ * Welcome animation — the name, engraved.
+ *
+ * A gold line draws outward, શ્રી હરિ જ્વેલર્સ rises from behind it, the English
+ * name settles as its letter-spacing tightens like an engraving coming into focus,
+ * and one glint of gold light crosses the name. Then the name itself flies up and
+ * lands on the same name in the header while the white stage collapses into it —
+ * the welcome hands over to the site in one continuous motion.
+ *
+ * Shown once per browser session (repeat loads skip it with no flash — see the inline
+ * script in app/layout.tsx), skippable with a tap / click / key, and reduced to a
+ * short fade for visitors who prefer less motion.
+ */
+
+const GOLD = '#C9A74D'
+const GOLD_DEEP = '#B8860B'
+const PURPLE = '#8069BF'
+
+type Bezier = [number, number, number, number]
+const EASE: Bezier = [0.22, 1, 0.36, 1]
+const EASE_MOVE: Bezier = [0.76, 0, 0.24, 1]
+const LIFT: Transition = { type: 'spring', stiffness: 150, damping: 20 }
+
+const HOLD_MS = 2600 // when the hand-over starts
+const EXIT_S = 1
+const SESSION_KEY = 'sh_welcome_seen'
+
+type Phase = 'play' | 'exit' | 'done'
+type Exit = { x: number; y: number; scale: number; from: string; to: string } | null
+
+// Lets the home hero start its entrance as the stage collapses
+function signalDone() {
+  ;(window as Window & { __shLoaderDone?: boolean }).__shLoaderDone = true
+  window.dispatchEvent(new Event('sh:loader-done'))
+}
 
 export default function LuxuryLoader() {
-  const [visible, setVisible] = useState(true)
+  const reduceMotion = useReducedMotion()
+  const [phase, setPhase] = useState<Phase>('play')
+  const [exitPlan, setExitPlan] = useState<Exit>(null)
+  const exiting = useRef(false)
+  const nameRef = useRef<HTMLSpanElement>(null)
 
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(false), 3400)
-    return () => clearTimeout(t)
+  const startExit = useCallback(() => {
+    if (exiting.current) return
+    exiting.current = true
+    try {
+      sessionStorage.setItem(SESSION_KEY, '1')
+    } catch {
+      /* private mode — it will simply play again next load */
+    }
+
+    // Plan the flight of the name to the same name in the header
+    const name = nameRef.current?.getBoundingClientRect()
+    const target = document.querySelector('header [data-brand-name]')?.getBoundingClientRect()
+    if (name) {
+      const nx = name.left + name.width / 2
+      const ny = name.top + name.height / 2
+      const hasTarget = !!target && target.width > 0
+      const tx = hasTarget ? target!.left + target!.width / 2 : nx
+      const ty = hasTarget ? target!.top + target!.height / 2 : 0
+      const cover = Math.hypot(Math.max(nx, innerWidth - nx), Math.max(ny, innerHeight - ny))
+      setExitPlan({
+        x: tx - nx,
+        y: ty - ny,
+        scale: hasTarget ? target!.width / name.width : 0.5,
+        from: `circle(${Math.ceil(cover)}px at ${nx}px ${ny}px)`,
+        to: `circle(0px at ${tx}px ${ty}px)`,
+      })
+    }
+
+    signalDone()
+    setPhase('exit')
   }, [])
 
+  useEffect(() => {
+    // Already welcomed this session: the inline script has hidden the overlay before
+    // first paint, so just release the page.
+    if (document.documentElement.dataset.welcome === 'seen') {
+      exiting.current = true
+      const t = setTimeout(() => {
+        signalDone()
+        setPhase('done')
+      }, 0)
+      return () => clearTimeout(t)
+    }
+
+    document.body.style.overflow = 'hidden'
+    const t = setTimeout(startExit, reduceMotion ? 800 : HOLD_MS)
+    const skip = () => startExit()
+    window.addEventListener('keydown', skip)
+    return () => {
+      clearTimeout(t)
+      window.removeEventListener('keydown', skip)
+      document.body.style.overflow = ''
+    }
+  }, [reduceMotion, startExit])
+
+  if (phase === 'done') return null
+
+  const exit = phase === 'exit'
+  const hero = exit && exitPlan && !reduceMotion
+  const finish = () => {
+    document.body.style.overflow = ''
+    setPhase('done')
+  }
+
+  const at = (delay: number, duration = 0.6, ease: Bezier = EASE): Transition =>
+    reduceMotion ? { duration: 0 } : { delay, duration, ease }
+  const spring = (delay: number, s: Transition = LIFT): Transition => (reduceMotion ? { duration: 0 } : { ...s, delay })
+
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center select-none"
-          style={{ background: '#FDFCFA' }}
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: 'easeInOut' }}
-        >
-          {/* Subtle warm centre glow */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(201,167,77,0.08) 0%, rgba(128,105,191,0.03) 60%, transparent 100%)',
-            }}
-          />
+    <div
+      className="sh-welcome fixed inset-0 z-[9999] select-none"
+      style={{ pointerEvents: exit ? 'none' : 'auto', cursor: 'pointer' }}
+      role="status"
+      aria-label="Welcome to Shri Hari Jewellers"
+      onClick={startExit}
+    >
+      {/* ── The stage: white, collapsing into the header name on exit ── */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{ background: '#FFFFFF' }}
+        initial={false}
+        animate={hero ? { clipPath: [exitPlan.from, exitPlan.to] } : exit ? { opacity: 0 } : {}}
+        transition={hero ? { duration: EXIT_S, ease: EASE_MOVE } : { duration: 0.35 }}
+        onAnimationComplete={() => exit && finish()}
+      >
+        <div
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse 50% 40% at 50% 48%, rgba(201,167,77,0.09) 0%, rgba(201,167,77,0.02) 45%, transparent 75%)' }}
+        />
+      </motion.div>
 
-          {/* ── All content centred ───────────────────────────── */}
-          <div className="relative z-10 flex flex-col items-center gap-8">
-
-            {/* ACTUAL SITE LOGO — inline SVG from icon.svg ─────── */}
-            <motion.div
-              style={{ width: 160, height: 160, position: 'relative' }}
-              initial={{ opacity: 0, scale: 0.92, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              transition={{ duration: 1.1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      {/* ── The name ── */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
+        <div className="flex flex-col items-center text-center">
+          {/* Gujarati vowel signs reach above the line box — the mask gets extra room and
+              the name starts well below it, so no marks peek out before the reveal */}
+          {/* (the mask is lifted for the hand-over so the flying name isn't clipped) */}
+          <span className={`block px-2 py-3 ${exit ? 'overflow-visible' : 'overflow-hidden'}`}>
+            <motion.span
+              ref={nameRef}
+              className="block text-[40px] font-bold leading-[1.4] sm:text-[60px]"
+              // One glint of gold light crosses the name (gradient clipped to the text)
+              style={{
+                backgroundImage: `linear-gradient(100deg, ${PURPLE} 0%, ${PURPLE} 42%, #E9D49A 50%, ${PURPLE} 58%, ${PURPLE} 100%)`,
+                backgroundSize: '260% 100%',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+              initial={reduceMotion ? false : { y: '150%', backgroundPosition: '100% 0%' }}
+              animate={
+                hero
+                  ? { x: exitPlan.x, y: exitPlan.y, scale: exitPlan.scale, opacity: [1, 1, 0] }
+                  : exit
+                    ? { opacity: 0 }
+                    : { y: '0%', backgroundPosition: '0% 0%' }
+              }
+              transition={
+                hero
+                  ? { duration: EXIT_S, ease: EASE_MOVE, opacity: { duration: EXIT_S, times: [0, 0.85, 1] } }
+                  : exit
+                    ? { duration: 0.3 }
+                    : reduceMotion
+                      ? { duration: 0 }
+                      : { y: { ...LIFT, delay: 0.4 }, backgroundPosition: { delay: 1.5, duration: 1.1, ease: [0.45, 0, 0.25, 1] } }
+              }
             >
-              <svg
-                width="160"
-                height="160"
-                viewBox="0 0 100 100"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-label="Shri Hari Jewellers Logo"
-              >
-                {/* Background circle — transparent so cream bg shows through */}
-                <circle cx="50" cy="50" r="48" fill="transparent" stroke="#C9A74D" strokeWidth="1.2" />
+              શ્રી હરિ જ્વેલર્સ
+            </motion.span>
+          </span>
 
-                {/* Sunburst / Lotus ring — slow rotating group */}
-                <motion.g
-                  style={{ transformOrigin: '50px 50px' }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-                >
-                  {Array.from({ length: 36 }, (_, i) => (
-                    <path
-                      key={i}
-                      d="M50 4 L51 8 L49 8 Z"
-                      fill="#C9A74D"
-                      transform={`rotate(${i * 10} 50 50)`}
-                    />
-                  ))}
-                </motion.g>
-
-                {/* Inner beaded dashed ring */}
-                <circle
-                  cx="50" cy="50" r="40"
-                  stroke="#B8860B"
-                  strokeWidth="1.2"
-                  strokeDasharray="2 4"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-
-                {/* Geometric diamond frame */}
-                <path d="M50 15 L85 50 L50 85 L15 50 Z" stroke="#C9A74D" strokeWidth="0.8" fill="none" opacity="0.35" />
-                <path d="M50 20 L80 50 L50 80 L20 50 Z" stroke="#B8860B" strokeWidth="0.8" fill="none" opacity="0.5" />
-
-                {/* Centre white circle — matches cream bg */}
-                <circle cx="50" cy="50" r="32" fill="#FDFCFA" />
-                <circle cx="50" cy="50" r="30" stroke="#C9A74D" strokeWidth="0.8" opacity="0.55" fill="none" />
-
-                {/* Crown ornament top */}
-                <path d="M44 26 C48 20, 52 20, 56 26 C53 28, 47 28, 44 26 Z" fill="#C9A74D" />
-                <circle cx="50" cy="22" r="1.5" fill="#D4AF37" />
-
-                {/* Bottom diamond ornament */}
-                <path d="M50 78 L47 72 L53 72 Z" fill="#B8860B" />
-
-                {/* SH monogram — brand purple matching the website */}
-                <text
-                  x="50"
-                  y="60"
-                  fontFamily="Georgia, 'Times New Roman', serif"
-                  fontSize="28"
-                  fontWeight="900"
-                  fill="#8069BF"
-                  textAnchor="middle"
-                  letterSpacing="1"
-                >
-                  SH
-                </text>
-              </svg>
-
-              {/* Shine sweep — contained inside the 160×160 box */}
-              <motion.div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  pointerEvents: 'none',
-                }}
-                initial={{ x: '-130%' }}
-                animate={{ x: '130%' }}
-                transition={{ delay: 2.0, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background:
-                      'linear-gradient(108deg, transparent 20%, rgba(255,248,220,0.22) 46%, rgba(255,248,220,0.30) 54%, transparent 78%)',
-                  }}
-                />
-              </motion.div>
-            </motion.div>
-
-            {/* BRAND TEXT ───────────────────────────────────────── */}
-            <div className="flex flex-col items-center" style={{ gap: 9 }}>
-              <motion.p
-                style={{
-                  fontFamily: "'Source Sans 3', Arial, sans-serif",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: '0.50em',
-                  textTransform: 'uppercase',
-                  color: '#1A1625',
-                  margin: 0,
-                }}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.7, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              >
-                Shri Hari Jewellers
-              </motion.p>
-
-              <motion.div
-                style={{
-                  height: 1,
-                  width: 52,
-                  background: 'linear-gradient(to right, transparent, #C9A74D, transparent)',
-                  transformOrigin: 'center',
-                }}
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 2.0, duration: 0.8 }}
-              />
-
-              <motion.p
-                style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: 9,
-                  fontStyle: 'italic',
-                  color: 'rgba(160,120,48,0.80)',
-                  letterSpacing: '0.15em',
-                  margin: 0,
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.2, duration: 0.7 }}
-              >
-                Crafting Timeless Elegance
-              </motion.p>
-
-              <motion.p
-                style={{
-                  fontFamily: "'Source Sans 3', Arial, sans-serif",
-                  fontSize: 7,
-                  letterSpacing: '0.30em',
-                  textTransform: 'uppercase',
-                  color: 'rgba(128,105,191,0.60)',
-                  margin: 0,
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.4, duration: 0.6 }}
-              >
-                Mogar · Anand · Est. 2001
-              </motion.p>
-            </div>
-
-            {/* LOADING DIAMONDS ─────────────────────────────────── */}
-            <motion.div
-              style={{ display: 'flex', gap: 12, alignItems: 'center' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.6, duration: 0.5 }}
-            >
-              {([
-                { color: '#8069BF', delay: 0 },
-                { color: '#C9A74D', delay: 0.22 },
-                { color: '#8069BF', delay: 0.44 },
-              ] as { color: string; delay: number }[]).map((d, i) => (
-                <motion.div
-                  key={i}
-                  style={{
-                    width: 5,
-                    height: 5,
-                    backgroundColor: d.color,
-                    transform: 'rotate(45deg)',
-                    willChange: 'opacity',
-                  }}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{
-                    duration: 1.1,
-                    delay: d.delay,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                />
-              ))}
-            </motion.div>
-          </div>
-
-          {/* PROGRESS LINES ───────────────────────────────────── */}
           <motion.div
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              height: 1,
-              background:
-                'linear-gradient(to right, transparent, #8069BF 25%, #C9A74D 50%, #8069BF 75%, transparent)',
-            }}
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            transition={{ delay: 0.2, duration: 3.2, ease: 'easeInOut' }}
-          />
-          <motion.div
-            aria-hidden="true"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              height: 1,
-              background:
-                'linear-gradient(to right, transparent, #8069BF 25%, #C9A74D 50%, #8069BF 75%, transparent)',
-            }}
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            transition={{ delay: 0.2, duration: 3.2, ease: 'easeInOut' }}
-          />
-
-          {/* CORNER ORNAMENTS ─────────────────────────────────── */}
-          {([
-            { cls: 'top-5 left-5',     rot: 0   },
-            { cls: 'top-5 right-5',    rot: 90  },
-            { cls: 'bottom-5 right-5', rot: 180 },
-            { cls: 'bottom-5 left-5',  rot: 270 },
-          ] as { cls: string; rot: number }[]).map(({ cls, rot }, i) => (
-            <motion.svg
-              key={i}
+            className="flex flex-col items-center"
+            animate={exit ? { opacity: 0 } : { opacity: 1 }}
+            transition={{ duration: exit ? 0.25 : 0 }}
+          >
+            {/* The gold line the name rises from */}
+            <motion.span
               aria-hidden="true"
-              width="16" height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              className={`absolute ${cls}`}
-              style={{ rotate: rot }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 + i * 0.07, duration: 0.5 }}
+              className="block h-px w-40 sm:w-56"
+              style={{ background: `linear-gradient(to right, transparent, ${GOLD} 20%, ${GOLD} 80%, transparent)` }}
+              initial={reduceMotion ? false : { scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={at(0.15, 0.9, [0.65, 0, 0.35, 1])}
+            />
+
+            <motion.p
+              className="mt-5 font-label text-[11px] font-semibold uppercase sm:text-[13px]"
+              style={{ color: '#3B3448' }}
+              initial={reduceMotion ? false : { opacity: 0, letterSpacing: '0.85em' }}
+              animate={{ opacity: 1, letterSpacing: '0.42em' }}
+              transition={at(1.0, 1.1)}
             >
-              <path d="M1 1 H7 M1 1 V7" stroke="#C9A74D" strokeWidth="0.9" opacity="0.5" />
-            </motion.svg>
-          ))}
-        </motion.div>
+              Shree Hari Jewellers
+            </motion.p>
+
+            <motion.p
+              className="mt-2.5 font-label text-[9px] uppercase tracking-[0.34em] sm:text-[10px]"
+              style={{ color: GOLD_DEEP }}
+              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={spring(1.3)}
+            >
+              Padrawala · Mogar · Anand · Since 2001
+            </motion.p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Quiet skip hint */}
+      {!reduceMotion && (
+        <motion.p
+          className="pointer-events-none absolute inset-x-0 bottom-7 text-center font-label text-[10px] uppercase tracking-[0.3em]"
+          style={{ color: '#B5AFBF' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: exit ? 0 : 1 }}
+          transition={{ delay: exit ? 0 : 1, duration: exit ? 0.2 : 0.5 }}
+        >
+          Tap to skip
+        </motion.p>
       )}
-    </AnimatePresence>
+    </div>
   )
 }

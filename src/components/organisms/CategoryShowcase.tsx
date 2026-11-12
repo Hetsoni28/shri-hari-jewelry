@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { staggerContainer, fadeUpVariant, imageHoverVariant, cardHoverVariant, luxuryEasing, durations } from '@/lib/animations';
+import { staggerContainer, fadeUpVariant, luxuryEasing } from '@/lib/animations';
 import { urlForImage } from '@/sanity/image';
 
 export default function CategoryShowcase({ products }: { products: any[] }) {

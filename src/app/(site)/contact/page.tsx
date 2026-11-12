@@ -2,11 +2,12 @@ import ContactHeader from '@/components/organisms/ContactHeader';
 import ContactInfoAndForm from '@/components/organisms/ContactInfoAndForm';
 import ContactMapAndCraftsmanship from '@/components/organisms/ContactMapAndCraftsmanship';
 import { client } from '@/sanity/client';
-import { groq } from 'next-sanity';
 import { urlForImage } from '@/sanity/image';
 import { productsQuery } from '@/sanity/queries';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata = { title: 'Contact & Visit Us' };
 
 export default async function ContactPage() {
   const products = await client.fetch(productsQuery);
@@ -33,7 +34,6 @@ export default async function ContactPage() {
   ];
 
   const heroImg = heroItem?.images?.[0];
-  const gridRaw = gridItems.map(item => item?.images?.[0]).filter(Boolean);
 
   const heroUrl = heroImg
     ? urlForImage(heroImg)?.width(1920).quality(95).format('jpg').url() || ''

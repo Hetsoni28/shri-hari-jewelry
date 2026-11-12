@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image, Font, Svg, Defs, LinearGradient, Stop, Circle, Path } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
 import { CatalogProduct } from '../molecules/DownloadPdfButton';
 
 // Register Gujarati fonts for proper rendering of the brand name
@@ -77,35 +77,6 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoGujarati-Bold',
     fontSize: 10,
     color: '#B8860B',
-  },
-  // Center Logo
-  logoContainer: {
-    width: 120,
-    height: 120,
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 40,
-  },
-  logoInnerRing: {
-    width: 104,
-    height: 104,
-    borderRadius: 52,
-    borderWidth: 0.5,
-    borderColor: '#D4AF37',
-    position: 'absolute',
-    top: 7,
-    left: 7,
-  },
-  logoText: {
-    position: 'absolute',
-    top: 41,
-    left: 0,
-    right: 0,
-    fontFamily: 'Times-Bold',
-    fontSize: 34,
-    color: '#D4AF37',
-    textAlign: 'center',
   },
   // Divider
   dividerRow: {
@@ -261,39 +232,6 @@ interface CatalogDocumentProps {
   products: CatalogProduct[];
 }
 
-const PdfLogo = () => (
-  <View style={styles.logoContainer}>
-    <Svg width="120" height="120" viewBox="0 0 100 100">
-      {/* Background Seal */}
-      <Circle cx="50" cy="50" r="48" fill="#FFFFFF" stroke="#D4AF37" strokeWidth="1.5" />
-      
-      {/* Intricate Sunburst/Lotus Ring */}
-      {Array.from({ length: 36 }).map((_, i) => (
-        <Path key={i} d="M50 4 L51 8 L49 8 Z" fill="#D4AF37" transform={`rotate(${i * 10} 50 50)`} />
-      ))}
-
-      {/* Inner Beaded Ring */}
-      <Circle cx="50" cy="50" r="40" stroke="#D4AF37" strokeWidth="1.5" strokeDasharray="2, 4" />
-
-      {/* Royal Geometric Core */}
-      <Path d="M50 15 L85 50 L50 85 L15 50 Z" stroke="#D4AF37" strokeWidth="1" fill="none" opacity="0.3" />
-      <Path d="M50 20 L80 50 L50 80 L20 50 Z" stroke="#D4AF37" strokeWidth="1" fill="none" opacity="0.5" />
-
-      {/* Center Shield */}
-      <Circle cx="50" cy="50" r="32" fill="#FFFFFF" />
-      <Circle cx="50" cy="50" r="30" stroke="#D4AF37" strokeWidth="1" opacity="0.6" />
-
-      {/* Crown */}
-      <Path d="M44 26 C48 20 52 20 56 26 C53 28 47 28 44 26 Z" fill="#D4AF37" />
-      <Circle cx="50" cy="22" r="1.5" fill="#D4AF37" />
-
-      {/* Bottom Diamond */}
-      <Path d="M50 78 L47 72 L53 72 Z" fill="#D4AF37" />
-    </Svg>
-    <Text style={styles.logoText}>SH</Text>
-  </View>
-);
-
 export default function CatalogDocument({ title, subtitle, products }: CatalogDocumentProps) {
   return (
     <Document>
@@ -311,9 +249,6 @@ export default function CatalogDocument({ title, subtitle, products }: CatalogDo
             <Text style={styles.brandNameEnglish}>SHREE HARI JEWELLERS</Text>
             <Text style={styles.brandNameTagline}>પાદરાવાળા</Text>
           </View>
-
-          {/* Central Logo Ring */}
-          <PdfLogo />
 
           {/* Elegant Divider */}
           <View style={styles.dividerRow}>

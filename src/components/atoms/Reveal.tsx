@@ -1,6 +1,5 @@
 'use client';
 
-import { useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { luxuryEasing, durations } from '@/lib/animations';
 

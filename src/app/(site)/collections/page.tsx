@@ -11,6 +11,8 @@ const BespokeService = dynamic(() => import('@/components/organisms/BespokeServi
 
 export const revalidate = 60;
 
+export const metadata = { title: 'Collections' };
+
 export default async function CollectionsPage() {
   const products = await client.fetch(productsQuery);
 

@@ -27,6 +27,28 @@ interface DownloadPdfButtonProps {
 
 type ButtonState = 'idle' | 'loading' | 'done';
 
+// ─── Download icon SVG ─────────────────────────────────────────────────────
+function DownloadIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  );
+}
+
+function SpinIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+      <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 export default function DownloadPdfButton({
   title, pdfTitle, subtitle, filename, products,
   variant = 'primary', count, previewImage,
@@ -104,24 +126,6 @@ export default function DownloadPdfButton({
 
   const isDone    = state === 'done';
   const isLoading = state === 'loading';
-
-  // ─── Download icon SVG ───────────────────────────────────────────────────
-  const DownloadIcon = ({ size = 14 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-  );
-
-  const SpinIcon = ({ size = 14 }: { size?: number }) => (
-    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
-      <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round"/>
-    </svg>
-  );
 
   // ─── FULL variant (Master Inventory button) ──────────────────────────────
   if (variant === 'full') {

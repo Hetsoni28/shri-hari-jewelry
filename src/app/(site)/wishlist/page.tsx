@@ -5,6 +5,8 @@ import WishlistCurated from '@/components/organisms/WishlistCurated';
 import { client } from '@/sanity/client';
 import { productsQuery } from '@/sanity/queries';
 
+export const metadata = { title: 'My Wishlist' };
+
 export default async function WishlistPage() {
   const products = await client.fetch(productsQuery) || [];
 

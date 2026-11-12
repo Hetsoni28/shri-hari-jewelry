@@ -1,9 +1,9 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMetalRates } from '@/hooks/useMetalRates';
-import type { MetalRates } from '@/hooks/useMetalRates';
 
 function formatDate(ts: string) {
   const d = new Date(ts);
@@ -15,10 +15,10 @@ function formatDate(ts: string) {
 }
 
 const METAL_CARDS = [
-  { label: 'Gold 24KT', sublabel: 'Pure Gold',      key: 'gold24' as const, silver: false },
-  { label: 'Gold 22KT', sublabel: 'Jewellery Gold', key: 'gold22' as const, silver: false },
-  { label: 'Gold 18KT', sublabel: 'Mixed Alloy',    key: 'gold18' as const, silver: false },
-  { label: 'Silver',    sublabel: '92.5 Sterling',  key: 'silver' as const, silver: true  },
+  { label: 'Gold 24KT', sublabel: '999 · fine gold',      key: 'gold24' as const, silver: false },
+  { label: 'Gold 22KT', sublabel: '916 · jewellery gold', key: 'gold22' as const, silver: false },
+  { label: 'Gold 18KT', sublabel: '750',                  key: 'gold18' as const, silver: false },
+  { label: 'Silver',    sublabel: '999 · fine silver',    key: 'silver' as const, silver: true  },
 ];
 
 export default function GoldRateWidget() {
@@ -48,7 +48,7 @@ export default function GoldRateWidget() {
       >
         {/* Tooltip Pill */}
         <div
-          className="absolute bottom-full right-0 mb-2 bg-white px-3 py-1.5 shadow-md flex items-center justify-center pointer-events-none border border-[#8069BF]/20"
+          className="absolute bottom-full right-0 mb-2 bg-white px-3 py-1.5 shadow-md hidden sm:flex items-center justify-center pointer-events-none border border-[#8069BF]/20"
           style={{ minWidth: 'max-content' }}
         >
           <span className="text-[13px] font-semibold text-[#8069BF] tracking-wide">
@@ -106,7 +106,7 @@ export default function GoldRateWidget() {
                     className="text-[9px] uppercase tracking-[0.22em] font-bold"
                     style={{ color: '#8069BF' }}
                   >
-                    Live Market Rate
+                    {data ? (data.source === 'shop' ? 'Shop rate' : 'Market estimate') : "Today's rate"}
                   </span>
                 </div>
                 <h3
@@ -117,7 +117,9 @@ export default function GoldRateWidget() {
                 </h3>
                 {data && (
                   <p className="text-[10px] mt-0.5 tracking-wide" style={{ color: '#7C7296' }}>
-                    Last updated: {formatDate(data.timestamp)}
+                    {data.source === 'shop'
+                      ? `Updated ${formatDate(data.asOf)}`
+                      : `Based on international prices of ${new Date(data.asOf).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}`}
                   </p>
                 )}
               </div>
@@ -171,7 +173,7 @@ export default function GoldRateWidget() {
                   ) : (
                     <div className="mt-1.5 pt-2 border-t" style={{ borderColor: r.silver ? 'rgba(124,114,150,0.15)' : 'rgba(128,105,191,0.15)' }}>
                       <p className="text-[8px] uppercase tracking-widest font-semibold mb-1" style={{ color: r.silver ? '#9E99B0' : '#7C7296' }}>
-                        Approx Price
+                        Per gram
                       </p>
                       <p
                         className="text-[17px] font-bold leading-none"
@@ -193,8 +195,8 @@ export default function GoldRateWidget() {
 
             {/* CTA — Brand Purple */}
             <div className="px-4 pb-4">
-              <a
-                href="/collections"
+              <Link
+                href="/catalog"
                 onClick={() => setOpen(false)}
                 className="block w-full text-center text-[12px] font-bold tracking-wide py-2.5 transition-all duration-200 hover:brightness-110"
                 style={{
@@ -203,8 +205,8 @@ export default function GoldRateWidget() {
                   boxShadow: '0 4px 14px rgba(128,105,191,0.40)',
                 }}
               >
-                Shop Now →
-              </a>
+                Browse the catalogue →
+              </Link>
             </div>
 
             {/* Disclaimer */}
@@ -212,7 +214,9 @@ export default function GoldRateWidget() {
               className="text-center text-[9px] pb-3 px-4 tracking-wide"
               style={{ color: '#9E99B0' }}
             >
-              Rates for reference only · Actual price may vary by karat &amp; making
+              {data?.source === 'shop'
+                ? 'Before 3% GST and making charges · confirmed at the shop'
+                : 'Estimate: international price + 6% import duty, before 3% GST and making charges. Final rate confirmed at the shop.'}
             </p>
           </motion.div>
         )}

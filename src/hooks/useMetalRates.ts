@@ -8,7 +8,19 @@ export interface MetalRates {
   gold18: number;
   silver: number;
   trend: { gold22: string; silver: string };
+  /** 'shop' = the shop's own published rate; 'market' = calculated market estimate */
+  source: 'shop' | 'market';
+  /** when the rates were set (shop) or the date of the market data */
+  asOf: string;
   timestamp: string;
+}
+
+/** "Shop rate · 12 Nov, 10:30 am" or "Market estimate · 11 Nov" */
+export function rateLabel(r: Pick<MetalRates, 'source' | 'asOf'>) {
+  const d = new Date(r.asOf);
+  return r.source === 'shop'
+    ? `Shop rate · ${d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}`
+    : `Market estimate · ${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' })}`;
 }
 
 // ── Module-level shared state so all components share ONE fetch ──
@@ -61,12 +73,8 @@ export function useMetalRates(refreshEveryMs = 10 * 60 * 1000): MetalRates | nul
     mounted.current = true;
     listeners.add(handleUpdate);
 
-    // Start fetching if not already
-    if (!globalRates) {
-      fetchAndBroadcast();
-    } else {
-      setRates(globalRates);
-    }
+    // Start fetching if not already (if rates are already loaded, useState started with them)
+    if (!globalRates) fetchAndBroadcast();
 
     scheduleNext(refreshEveryMs);
 

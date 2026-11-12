@@ -14,9 +14,6 @@ export const contentType = 'image/png';
  *  - SVG <path>, <circle>, <g> with transform ARE supported
  */
 export default function OGImage() {
-  // 36 sunburst triangles — same as the actual icon.svg
-  const sunbursts = Array.from({ length: 36 }, (_, i) => i)
-
   return new ImageResponse(
     (
       <div
@@ -47,65 +44,8 @@ export default function OGImage() {
         {/* ── MAIN CONTENT ───────────────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
-          {/* Logo: SVG ring + overlaid div for "SH" (no SVG text) */}
-          <div style={{ position: 'relative', width: '220px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
-            <svg width="220" height="220" viewBox="0 0 100 100">
-              {/* Outer ring */}
-              <circle cx="50" cy="50" r="48" fill="#FDFCFA" stroke="#C9A74D" strokeWidth="1.2" />
-
-              {/* 36 sunburst gold triangles */}
-              {sunbursts.map((i) => (
-                <path
-                  key={i}
-                  d="M50 4 L51 8 L49 8 Z"
-                  fill="#C9A74D"
-                  transform={`rotate(${i * 10} 50 50)`}
-                />
-              ))}
-
-              {/* Beaded inner ring */}
-              <circle cx="50" cy="50" r="40" stroke="#B8860B" strokeWidth="1.2" strokeDasharray="2 4" fill="none" />
-
-              {/* Diamond geometry */}
-              <path d="M50 15 L85 50 L50 85 L15 50 Z" stroke="#C9A74D" strokeWidth="0.8" fill="none" opacity="0.3" />
-              <path d="M50 20 L80 50 L50 80 L20 50 Z" stroke="#B8860B" strokeWidth="0.8" fill="none" opacity="0.45" />
-
-              {/* Centre white fill */}
-              <circle cx="50" cy="50" r="32" fill="#FDFCFA" />
-              <circle cx="50" cy="50" r="30" stroke="#C9A74D" strokeWidth="0.8" opacity="0.5" fill="none" />
-
-              {/* Crown at top */}
-              <path d="M44 26 C48 20, 52 20, 56 26 C53 28, 47 28, 44 26 Z" fill="#C9A74D" />
-              <circle cx="50" cy="22" r="1.5" fill="#D4AF37" />
-
-              {/* Bottom arrow ornament */}
-              <path d="M50 78 L47 72 L53 72 Z" fill="#B8860B" />
-
-              {/* NO <text> here — Satori doesn't support SVG text nodes */}
-            </svg>
-
-            {/* "SH" as an HTML div overlaid on the centre of the SVG */}
-            <div
-              style={{
-                position: 'absolute',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#8069BF',
-                fontSize: '50px',
-                fontWeight: '900',
-                fontFamily: 'Georgia, serif',
-                letterSpacing: '3px',
-                paddingTop: '8px', // nudge to match original text y-position
-              }}
-            >
-              SH
-            </div>
-          </div>
-
           {/* Brand name in brand purple */}
-          <div style={{ color: '#8069BF', fontSize: '70px', fontWeight: '900', letterSpacing: '-1px', lineHeight: '1', marginTop: '18px', display: 'flex' }}>
+          <div style={{ color: '#8069BF', fontSize: '70px', fontWeight: '900', letterSpacing: '-1px', lineHeight: '1', display: 'flex' }}>
             Shri Hari
           </div>
 

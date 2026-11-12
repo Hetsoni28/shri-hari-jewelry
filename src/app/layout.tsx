@@ -4,7 +4,11 @@ import { shopInfo } from "@/data/shopInfo";
 import LuxuryLoader from "@/components/loading/LuxuryLoader";
 
 export const metadata: Metadata = {
-  title: `${shopInfo.name} | ${shopInfo.services[0]}`,
+  metadataBase: new URL('https://shri-hari-jewellers-eta.vercel.app'),
+  title: {
+    default: `${shopInfo.name} | ${shopInfo.services[0]}`,
+    template: `%s | ${shopInfo.name}`,
+  },
   description: `${shopInfo.name} ${shopInfo.subtitle} - ${shopInfo.services.join(', ')}. Located at ${shopInfo.address.city}.`,
   openGraph: {
     title: `${shopInfo.name} | ${shopInfo.services[0]}`,
@@ -40,9 +44,20 @@ export default function RootLayout({
       lang="en"
       className="h-full antialiased"
       data-scroll-behavior="smooth"
+      // the inline script below may add data-welcome before React hydrates
+      suppressHydrationWarning
     >
+      <head>
+        {/* Welcome animation plays once per session: mark repeat visits before first
+            paint so the overlay is hidden by CSS and never flashes */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{if(sessionStorage.getItem('sh_welcome_seen'))document.documentElement.dataset.welcome='seen'}catch(e){}",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-white text-[var(--foreground)] font-body">
-        {/* Luxury loader — shows on every page load / refresh */}
+        {/* Welcome animation — first page load of each visit */}
         <LuxuryLoader />
         {children}
       </body>

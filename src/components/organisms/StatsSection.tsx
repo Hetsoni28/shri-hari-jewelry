@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { staggerContainer, fadeUpVariant, luxuryEasing } from '@/lib/animations';
+import { staggerContainer, luxuryEasing } from '@/lib/animations';
 
 const stats = (productCount: number) => [
   { number: '25+',            label: 'Years of Excellence', delay: 0   },

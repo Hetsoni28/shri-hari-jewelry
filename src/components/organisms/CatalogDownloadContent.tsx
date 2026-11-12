@@ -32,13 +32,6 @@ export default function CatalogDownloadContent({ catalogProducts }: { catalogPro
         p.subcategory?.toLowerCase() === sub.toLowerCase()
     );
 
-  const byMetalCat = (metal: string, cat: string) =>
-    catalogProducts.filter(
-      (p) =>
-        p.metalType?.toLowerCase()  === metal.toLowerCase() &&
-        p.category?.toLowerCase()   === cat.toLowerCase()
-    );
-
   // First product's image URL — shown as live thumbnail on the button
   const preview = (list: CatalogProduct[]) => list[0]?.imageSrc || '';
 
